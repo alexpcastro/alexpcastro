@@ -11,22 +11,27 @@
     "react-clock": "6.0.0",
     "react-dom": "19.1.1",
     "react-router-dom": "7.7.1",
-    "react-scripts": "5.0.1"
+    "react-scripts": "5.0.1",
+    "serve": "14.2.7"
   },
   "devDependencies": {
     "@babel/runtime": "7.28.2",
     "typescript": "^4.9.5"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "NO_UPDATE_CHECK=1 serve --single --no-clipboard --listen tcp://0.0.0.0:${PORT:-8080} build",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "dev": "react-scripts start"
   },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "engines": {
+    "node": "22.x"
+  }
 }
