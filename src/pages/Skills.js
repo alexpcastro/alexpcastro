@@ -3,34 +3,36 @@ import "../styles.css";
 
 export default function Skills() {
   const skillSections = [
-    { 
-      title: "Front End", 
+    {
+      title: "AI & Agentic Systems",
       skills: [
-        "JavaScript", "AJAX", "React", "HTML5", "CSS3",
-        "DOM", "Node.js", "Next.js", "Accessibility",
-        "Material-UI", "Bootstrap", "WordPress"
-      ] 
+        "LLMs", "AI agents", "RAG", "Prompt engineering", "MCP",
+        "LLM evaluations", "Amazon Bedrock", "Amazon Bedrock AgentCore",
+        "Strands Agents", "OpenAI Codex", "GitHub Copilot"
+      ]
     },
-    { 
-      title: "Back End", 
+    {
+      title: "Full-Stack Development",
       skills: [
-        "Python", "Google Cloud (GCP)", "Firebase", "PHP",
-        "Flask", "RESTful APIs", "JSON", "Relational DB",
-        "Apache", "cURL", "SSH/Server management", "SSL"
-      ] 
+        "React", "Python", "FastAPI", "JavaScript", "TypeScript", "Node.js",
+        "SQL", "RESTful APIs", "GraphQL", "WebSocket streaming",
+        "OAuth", "Accessibility"
+      ]
     },
-    { 
-      title: "Database", 
+    {
+      title: "Cloud & Infrastructure",
       skills: [
-        "SQL", "MySQL", "GraphQL", "SQLite", "MySQLWorkbench"
-      ] 
+        "AWS", "Google Cloud (GCP)", "Cloud Run", "Cloud Build",
+        "Terraform", "Docker", "Linux", "Snowflake",
+        "Vector databases", "Observability"
+      ]
     },
-    { 
-      title: "Software Development Life Cycle", 
+    {
+      title: "Engineering Leadership & Delivery",
       skills: [
-        "Design, development, and implementation techniques leading to the construction of reliable, efficient, and cost-effective software",
-        "Analysis of software requirements, software design, testing procedures, software development tools, and management considerations."
-      ] 
+        "Technical strategy", "System architecture design", "Event-driven systems",
+        "CI/CD pipelines", "Git", "GitHub Actions", "Agile delivery", "Figma", "Semgrep"
+      ]
     }
   ];
 

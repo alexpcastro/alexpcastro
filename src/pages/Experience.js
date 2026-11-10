@@ -5,10 +5,11 @@ export default function Experience() {
   const experiences = [
     {
       company: "Deloitte",
-      role: "Engineering Lead",
+      role: "Head of Engineering, AI Advantage",
       date: "March 2022 – Present",
       details: [
-        "Leading large, globally distributed development teams to deliver enterprise-grade AI and cloud solutions for Fortune 100 companies."
+        "Lead engineering for Deloitte AI Advantage, owning product architecture, technical direction, and end-to-end AI development and delivery.",
+        "Work hands-on across React, Python, FastAPI, and AWS while leading frontend and design and improving AI development practices, guardrails, and evaluations."
       ]
     },
     {

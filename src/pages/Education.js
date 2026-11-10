@@ -9,7 +9,9 @@ export default function Education() {
       date: "Grad. Fall 2022",
       details: [
         "Machine learning, data modeling, data preparation, classification, regression, clustering, association rules mining, and visualization.",
-        "Authored blockchain paper pending publication, co-authors Dr. Mohamed Rahouti (Fordham) and Dr. Moussa Ayyash (Chicago State)"
+        <>
+          Co-authored <a href="https://ieeexplore.ieee.org/document/9854976" target="_blank" rel="noopener noreferrer">ScreenCoin: A Blockchain-Enabled Decentralized Ad Network</a>, published at IEEE COINS 2022.
+        </>
       ]
     },
     {

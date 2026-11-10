@@ -55,7 +55,7 @@ export default function App() {
 
   const homeIntroText = isReturning 
     ? (returnMessages[lastPage] || "Welcome back.")
-    : `Welcome.\n\nI'm Alex Castro, an engineer and designer based in New York City.\n\nExplore my work, background, and experience.`;
+    : `Welcome.\n\nI'm Alex Castro, an engineer and designer based in Denver, Colorado.\n\nExplore my work, background, and experience.`;
 
   // Reset buttons when home intro changes
   useEffect(() => {
