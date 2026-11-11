@@ -1,0 +1,8 @@
+.career-scene { display: block; width: 100%; max-width: 100%; height: auto; object-fit: contain; }
+@media (forced-colors: active) { .career-scene { forced-color-adjust: none; } }
+
+.career-media { position: relative; z-index: 1; display: block; width: 100%; height: 100%; }
+.career-video-layer { position: absolute; inset: 0; z-index: 2; display: block; pointer-events: none; }
+.career-video { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 2.2% / 4%; opacity: 0; }
+.career-video.is-playing { opacity: 1; }
+@media (prefers-reduced-motion: reduce), print { .career-video-layer { display: none; } }

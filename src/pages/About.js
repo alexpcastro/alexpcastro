@@ -1,12 +1,12 @@
 
 
-import TerminalType from "../components/TerminalType";
 import "../styles.css";
 
 export default function About() {
   return (
     <div className="page-container">
-      <TerminalType typedText="About Me" hideCursorOnFinish />
+      <p className="eyebrow">ABOUT / ALEX CASTRO</p>
+      <h1>About me</h1>
       <div className="fade-in" style={{ animationDelay: "0.3s" }}>
         <p>
           I'm an accomplished software engineer with a BS and MS in Computer Science from Fordham University,
@@ -15,16 +15,14 @@ export default function About() {
       </div>
       <div className="fade-in" style={{ animationDelay: "0.6s" }}>
         <p>
-          Over the past decade, I have managed and led engineering teams across academia, startups, and enterprise,
-          including overseeing a globally distributed team spanning four continents to deliver an enterprise-grade
-          generative AI platform.
+          I’m Head of Engineering for Deloitte AI Advantage, leading a core team of 15 engineers and owning
+          end-to-end AI development and delivery, from client discussions through production and hypercare.
         </p>
       </div>
       <div className="fade-in" style={{ animationDelay: "0.9s" }}>
         <p>
-          My work blends deep expertise in modern cloud infrastructure, AI systems, and web development with strong leadership
-          skills. In my current role, I architect AI solutions, lead development teams, meet with executives at large-scale
-          enterprises, and enable internal leadership teams to position and sell cutting-edge technology solutions.
+          I’m a hands-on player-coach and former startup CTO, working with React, Python, FastAPI, and AWS for AI in finance.
+          I own product architecture and technical decisions, lead frontend and design, and support global delivery teams.
         </p>
       </div>
       <div className="fade-in" style={{ animationDelay: "1.2s" }}>
@@ -35,7 +33,7 @@ export default function About() {
       </div>
       <div className="fade-in" style={{ animationDelay: "1.5s" }}>
         <p>
-          I'm also the co-author of an IEEE-published paper introducing Screencoin, a blockchain-enabled decentralized ad network.
+          I'm also the co-author of an IEEE-published paper introducing ScreenCoin, a blockchain-enabled decentralized ad network.
           Proud Hispanic, born in the United States and a U.S. citizen, fluent in English and Spanish, with an international background that includes attending high school in Barcelona.
         </p>
       </div>

@@ -1,0 +1,64 @@
+/* Fixed-width inner content unfolds inside the moving card. It never rewraps
+   through the narrow spine width, so the row stays steady during selection. */
+.experience-gallery { container-type: inline-size; }
+.gallery-track { display: flex; gap: 12px; align-items: stretch; min-width: 0; }
+.portfolio-entry.experience-card { display: flex; position: relative; flex: 1 1 0; gap: 0; min-width: 0; min-height: 390px; overflow: hidden; padding: 0; border: 0; border-radius: 12px; opacity: .38; cursor: pointer; transition: flex-basis 520ms cubic-bezier(.22,.8,.24,1), flex-grow 520ms cubic-bezier(.22,.8,.24,1), opacity 240ms; }
+.portfolio-entry.experience-card.is-active { flex: 0 0 72%; opacity: 1; cursor: default; }
+.experience-card.is-active .gallery-picture { flex: 0 0 38.16cqw; }
+.gallery-picture { margin: 0; padding: 0; border: 0; border-radius: 8px; text-align: left; background: transparent; color: inherit; flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.gallery-art-window { display: flex; align-items: center; justify-content: center; width: 100%; min-height: 260px; overflow: hidden; border-radius: 9px; }
+.gallery-picture .portfolio-art { flex: 0 0 auto; width: 350px; padding: 12px 7px; }
+.is-active .gallery-picture .portfolio-art { width: 100%; padding: 3.5% 2%; }
+.gallery-picture-caption { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 6px 0; font: 10px/1.5 var(--mono); color: #c2c5d1; white-space: nowrap; }
+.gallery-picture-caption > span { color: #ffb589; }
+.experience-card:not(.is-active) .gallery-picture-caption { writing-mode: vertical-rl; align-self: center; justify-content: flex-start; gap: 12px; height: 105px; padding-top: 11px; }
+.experience-story { flex: 0 0 33.84cqw; align-self: center; padding: 8px 0 8px 26px; }
+.experience-story[hidden] { display: none; }
+.experience-story h3 { font-size: clamp(26px, 2.5vw, 32px); }
+.experience-story .portfolio-summary { font-size: 13px; line-height: 1.7; }
+.experience-gallery button:focus-visible { outline: 2px solid #ffb589; outline-offset: -2px; }
+@media (min-width: 761px) and (max-width: 1000px) {
+  .portfolio-entry.experience-card { min-height: 610px; }
+  .portfolio-entry.experience-card.is-active { flex-basis: 65%; flex-direction: column; }
+  .experience-card.is-active .gallery-picture { flex: 0 0 auto; width: 65cqw; }
+  .gallery-art-window { min-height: 0; }
+  .gallery-picture { justify-content: flex-start; }
+  .gallery-picture .portfolio-art { width: 400px; }
+  .experience-story { flex-basis: auto; width: 65cqw; padding: 24px 6px 0; }
+  .experience-card:not(.is-active) .gallery-art-window { height: 260px; }
+}
+@media (max-width: 760px) {
+  .gallery-track { display: flex; flex-direction: column; gap: 18px; }
+  .portfolio-entry.experience-card, .portfolio-entry.experience-card.is-active { display: flex; flex-direction: column; flex: auto; width: 100%; min-height: 0; overflow: visible; opacity: 1; transition: none; }
+  .gallery-picture, .experience-card.is-active .gallery-picture { display: block; flex: auto; width: 100%; margin: 0; padding: 0; border: 0; border-radius: 8px; text-align: left; background: transparent; }
+  .gallery-art-window { height: 82px; min-height: 0; overflow: visible; }
+  .gallery-picture .portfolio-art { width: 100%; height: 100%; padding: 4px 5px; }
+  .gallery-picture .career-scene { width: 100%; height: 100%; object-fit: cover; object-position: center; border-radius: 7px; }
+  .experience-card.is-active .gallery-art-window { height: auto; }
+  .experience-card.is-active .portfolio-art { height: auto; padding: 3.5% 2%; }
+  .experience-card.is-active .career-scene { height: auto; border-radius: 2.2% / 4%; }
+  .gallery-picture-caption, .experience-card:not(.is-active) .gallery-picture-caption { display: flex; writing-mode: horizontal-tb; justify-content: space-between; align-self: auto; height: auto; padding: 8px 5px 0; color: #c2c5d1; font-size: 11px; }
+  .experience-card.is-active .gallery-picture-caption { color: #ffb589; }
+  .experience-story { flex: auto; width: 100%; min-height: 0; padding: 24px 2px 12px; }
+  .experience-story h3 { font-size: 29px; }
+  .experience-story .portfolio-summary { font-size: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portfolio-entry.experience-card { transition: none; }
+  .experience-story { animation: none; }
+}
+@media (forced-colors: active) {
+  .portfolio-entry.experience-card { opacity: 1; }
+}
+@media print {
+  .gallery-track { display: block; }
+  .portfolio-entry.experience-card, .portfolio-entry.experience-card.is-active { display: flex; flex-direction: row; opacity: 1; min-height: 0; margin: 30px 0; break-inside: avoid; }
+  .experience-story[hidden] { display: block; }
+  .experience-story { animation: none; }
+  .gallery-picture .portfolio-art { width: 100%; }
+  .experience-card:not(.is-active) .gallery-picture-caption { writing-mode: horizontal-tb; height: auto; }
+}
+
+.gallery-motion-control { display: block; margin: 12px 0 0; padding: 8px 10px; border: 1px solid #ffb58966; border-radius: 4px; color: #ffb589; background: transparent; font: 10px/1.5 var(--mono); cursor: pointer; }
+.gallery-motion-control:hover { border-color: #ffb589; color: #ffe2b9; }
+@media (prefers-reduced-motion: reduce), print { .gallery-motion-control { display: none; } }

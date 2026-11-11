@@ -1,5 +1,5 @@
 # dependencies
-node_modules/
+node_modules
 
 # production
 build/
@@ -34,3 +34,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# Private visual references and source image transfers
+.review-input/

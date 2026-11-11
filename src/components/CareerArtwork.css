@@ -1,0 +1,13 @@
+.career-artwork {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: #16131f;
+  isolation: isolate;
+}
+.career-artwork__type { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
+/* All seven sculptures are deliberately static. Their depth comes from geometry,
+   not motion, so the complete artwork is also available with reduced motion. */

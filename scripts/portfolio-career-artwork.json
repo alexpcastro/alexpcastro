@@ -1,0 +1,53 @@
+{
+  "status": "Six original AI-generated career illustrations integrated locally. No deployment.",
+  "style": "Cinematic tactile scenes with deep teal and midnight shadows, warm copper lighting and electric cyan accents.",
+  "assets": [
+    {
+      "id": "deloitte",
+      "source_file": "exec-1d6dd830-6bed-498b-ae44-691f924d8ce6.png",
+      "concept": "finance professionals working around a luminous glass AI engine that organizes financial information",
+      "web_file": "/artwork/deloitte-neon-1280.jpg"
+    },
+    {
+      "id": "fordham",
+      "source_file": "exec-c8b5d2b0-a42d-412e-8dde-54961ff3653a.png",
+      "concept": "a fictional presenter sharing research with an international assembly beneath an illuminated world map",
+      "web_file": "/artwork/fordham-neon-1280.jpg"
+    },
+    {
+      "id": "columbia",
+      "source_file": "exec-8c3b1204-1b30-44ae-aade-d31a03d7aace.png",
+      "concept": "a researcher using an imaginative machine to collect and organize web-search results",
+      "web_file": "/artwork/columbia-neon-1280.jpg"
+    },
+    {
+      "id": "brokr",
+      "source_file": "exec-cbacf52f-123f-4a68-b005-e0e18d5ef0ac.png",
+      "concept": "a miniature New York real-estate block with cutaway apartments connected to floor plans and keys",
+      "web_file": "/artwork/brokr-neon-1280.jpg"
+    },
+    {
+      "id": "pure-digital",
+      "source_file": "exec-04bddbbc-2b39-4376-8709-a4e0eed5e703.png",
+      "concept": "a small startup team creating a prototype in a warmly lit garage studio",
+      "web_file": "/artwork/pure-digital-neon-1280.jpg"
+    },
+    {
+      "id": "apc",
+      "source_file": "exec-4ef4740c-b078-4209-8fc3-9958917887b8.png",
+      "concept": "an original voxel adventure game world connected to hosting hardware inside a server cabinet",
+      "web_file": "/artwork/apc-neon-1280.jpg"
+    }
+  ],
+  "future_video": {
+    "implemented": false,
+    "contract": "Use the exact displayed still as the first frame and poster of a real clip. Preserve crop and color. Do not imitate video with CSS zoom. If implemented later, play muted inline on fine-pointer hover only; stop and reset on exit, pause offscreen, retain stills for touch and reduced motion, and do not preload video on initial page load."
+  },
+  "treatment": {
+    "method": "Offline edge-preserving smoothing, mean-shift texture reduction, soft tonal posterization, warm/cool false-color palette mapping.",
+    "palette": "Cobalt and violet shadows; vivid magenta, coral, orange and yellow highlights.",
+    "script": "python3 scripts/style_career_artwork.py",
+    "originals_preserved": true,
+    "runtime_filter_cost": false
+  }
+}

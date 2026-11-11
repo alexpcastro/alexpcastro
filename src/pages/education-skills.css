@@ -1,0 +1,551 @@
+/* Editorial education and toolkit layouts. Scoped to these pages. */
+
+.learning-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.learning-intro h1 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(42px,5.5vw,66px);
+  letter-spacing: -.04em;
+  line-height: 1.08;
+  margin: 3px 0 0;
+}
+
+.edu-section-label,.edu-date,.edu-program,.toolkit-map,.toolkit-number,.toolkit-logo,.toolkit-skills,.asset-credits {
+  font-family: var(--mono);
+}
+
+.learning-deck {
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0 0 7px;
+  max-width: 300px;
+}
+
+.education-page h2,.toolkit-page h2 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -.035em;
+  line-height: 1.12;
+}
+
+.education-page h3 {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 27px;
+  letter-spacing: -.025em;
+  line-height: 1.2;
+  margin: 7px 0 17px;
+}
+
+.edu-section-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 10px;
+  letter-spacing: .12em;
+  line-height: 1.6;
+  border-top: 1px solid var(--ink);
+  padding-top: 14px;
+}
+
+.edu-fordham>h2 {
+  font-size: clamp(35px,5vw,62px);
+  margin: 21px 0 24px;
+}
+
+.edu-photo {
+  margin: 0;
+  min-width: 0;
+}
+
+.edu-photo img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  background: var(--paper-dark);
+}
+
+.edu-photo figcaption {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.6;
+  margin-top: 9px;
+}
+
+.edu-main-photo img {
+  aspect-ratio: 2.65;
+  height: auto;
+  object-position: center 55%;
+}
+
+.edu-degrees {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 40px;
+  padding: 33px 0 45px;
+}
+
+.edu-degree {
+  display: grid;
+  grid-template-columns: 45px minmax(0,1fr);
+  gap: 18px;
+}
+
+.edu-degree-mark {
+  font-family: var(--serif);
+  font-size: 23px;
+  border-top: 2px solid var(--amber);
+  padding-top: 9px;
+}
+
+.edu-date {
+  font-size: 10px;
+  letter-spacing: .06em;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.edu-degree p:not(.edu-date),.edu-degree li,.edu-barcelona li {
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.edu-degree ul,.edu-barcelona ul {
+  padding-left: 18px;
+  margin: 13px 0;
+}
+
+.edu-degree li+li {
+  margin-top: 8px;
+}
+
+.edu-research {
+  border-left: 2px solid var(--amber);
+  padding: 4px 0 4px 16px;
+  margin-top: 24px;
+}
+
+.edu-research .eyebrow {
+  font-size: 9px;
+}
+
+.edu-research p {
+  margin: 9px 0 0;
+}
+
+.edu-research a {
+  text-underline-offset: 3px;
+}
+
+.edu-abroad>h2 {
+  font-size: clamp(30px,4vw,46px);
+  margin: 22px 0 25px;
+}
+
+.edu-abroad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.edu-abroad-grid .edu-photo img {
+  aspect-ratio: 1.9;
+  height: auto;
+}
+
+.edu-abroad-grid .edu-date {
+  margin-top: 24px;
+}
+
+.edu-abroad-grid h3 {
+  max-width: 380px;
+}
+
+.edu-program {
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 12px 0 0;
+}
+
+.edu-barcelona {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 40px;
+  border-top: 1px solid var(--line);
+  margin-top: 46px;
+  padding-top: 30px;
+}
+
+.edu-barcelona h2 {
+  font-size: clamp(28px,3.8vw,40px);
+  margin: 9px 0 17px;
+  max-width: 480px;
+}
+
+.edu-barcelona-note {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+.edu-bcn {
+  font-family: var(--serif);
+  font-size: clamp(50px,8vw,90px);
+  letter-spacing: -.06em;
+  line-height: 1;
+  color: var(--amber);
+}
+
+.edu-bcn>span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  margin-top: 14px;
+  color: var(--muted);
+}
+
+.asset-credits {
+  border-top: 1px solid var(--line);
+  margin-top: 42px;
+  padding-top: 15px;
+  font-size: 10px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+
+.asset-credits summary {
+  cursor: pointer;
+  width: fit-content;
+  padding: 5px 0;
+}
+
+.asset-credits summary:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 4px;
+}
+
+.asset-credits ul {
+  padding-left: 18px;
+}
+
+.asset-credits a {
+  text-underline-offset: 3px;
+}
+
+.toolkit-map {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  background: var(--ink);
+  color: var(--paper);
+  padding: 22px 24px;
+  gap: 0;
+  margin-bottom: 12px;
+}
+
+.toolkit-map button {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 15px;
+  text-decoration: none;
+  padding: 0 20px;
+  border-left: 1px solid #6a7e5e;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.toolkit-map button:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+
+.toolkit-map button>span:first-child {
+  grid-column: 1/-1;
+  color: var(--lime);
+  font-size: 10px;
+}
+
+.toolkit-map strong {
+  font-weight: 400;
+}
+
+.toolkit-map button:hover strong {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.toolkit-section {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 45px;
+  border-bottom: 1px solid var(--line);
+  padding: 40px 0;
+  scroll-margin-top: 100px;
+}
+
+.toolkit-heading {
+  display: grid;
+  grid-template-columns: 32px minmax(0,1fr);
+  gap: 16px;
+}
+
+.toolkit-number {
+  font-size: 11px;
+  color: var(--amber);
+  padding-top: 4px;
+}
+
+.toolkit-heading .eyebrow {
+  margin: 0 0 13px;
+  font-size: 9px;
+}
+
+.toolkit-heading h2 {
+  font-size: clamp(27px,3.8vw,39px);
+  margin: 0 0 15px;
+}
+
+.toolkit-description {
+  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 320px;
+}
+
+.toolkit-logos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-bottom: 23px;
+}
+
+.toolkit-logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 10px;
+}
+
+.toolkit-logo img {
+  object-fit: contain;
+  width: 35px;
+  height: 35px;
+}
+
+.toolkit-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.toolkit-skills li {
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.toolkit-intelligence .toolkit-skills li:nth-child(-n+6) {
+  background: var(--lime);
+  border-color: var(--lime);
+}
+
+.toolkit-delivery .toolkit-skills {
+  gap: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.toolkit-delivery .toolkit-skills li {
+  border: 0;
+  padding: 8px 12px 8px 0;
+}
+
+.toolkit-delivery .toolkit-skills li::before {
+  content: '↗';
+  margin-right: 7px;
+  color: var(--amber);
+}
+
+.toolkit-footnote {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  padding-top: 25px;
+}
+
+.toolkit-plus {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--lime);
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  font-family: var(--serif);
+  font-size: 30px;
+}
+
+.toolkit-footnote p {
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.toolkit-footnote p>span {
+  color: var(--muted);
+  font-family: var(--sans);
+}
+
+@media (max-width:760px) {
+  .learning-intro {
+    display: block;
+    margin-bottom: 28px;
+  }
+  .learning-deck {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  .edu-degrees {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .edu-degree+.edu-degree {
+    border-top: 1px solid var(--line);
+    padding-top: 25px;
+  }
+  .edu-main-photo img {
+    aspect-ratio: 1.8;
+  }
+  .toolkit-section {
+    grid-template-columns: 1fr;
+    gap: 23px;
+    padding: 30px 0;
+  }
+  .toolkit-description {
+    max-width: 500px;
+  }
+  .toolkit-map {
+    grid-template-columns: 1fr 1fr;
+    padding: 18px;
+    gap: 22px 12px;
+  }
+  .toolkit-map button {
+    padding: 0 0 0 15px;
+    gap: 8px;
+  }
+  .toolkit-map button:nth-child(odd) {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .toolkit-content {
+    padding-left: 48px;
+  }
+  .edu-barcelona {
+    gap: 24px;
+    grid-template-columns: .7fr 1.3fr;
+  }
+}
+
+@media (max-width:480px) {
+  .edu-section-label {
+    font-size: 9px;
+    flex-wrap: wrap;
+    gap: 5px 15px;
+  }
+  .edu-abroad-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .edu-abroad-grid .edu-photo img {
+    aspect-ratio: 1.8;
+  }
+  .edu-abroad-grid .edu-date {
+    margin-top: 17px;
+  }
+  .edu-degree {
+    grid-template-columns: 34px minmax(0,1fr);
+    gap: 12px;
+  }
+  .edu-degree-mark {
+    font-size: 21px;
+  }
+  .edu-barcelona {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .edu-barcelona-note {
+    flex-direction: row;
+    align-items: center;
+  }
+  .edu-bcn {
+    font-size: 43px;
+  }
+  .edu-bcn>span {
+    font-size: 8px;
+    margin-top: 8px;
+  }
+  .toolkit-content {
+    padding-left: 0;
+  }
+  .toolkit-heading {
+    gap: 10px;
+    grid-template-columns: 25px minmax(0,1fr);
+  }
+  .toolkit-logos {
+    gap: 15px;
+  }
+  .toolkit-logo {
+    font-size: 9px;
+    gap: 6px;
+  }
+  .toolkit-logo img {
+    width: 30px;
+    height: 30px;
+  }
+  .toolkit-delivery .toolkit-skills {
+    grid-template-columns: 1fr;
+  }
+}
+
+.toolkit-map button {
+  background: none;
+  border: 0;
+  border-left: 1px solid #6a7e5e;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.toolkit-map button:first-child {
+  border-left: 0;
+}
+
+.toolkit-section:focus {
+  outline: none;
+}
+
+@media (max-width:760px) {
+  .toolkit-map button:nth-child(odd) {
+    border-left: 0;
+  }
+}

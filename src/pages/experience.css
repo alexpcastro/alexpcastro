@@ -1,0 +1,246 @@
+.experience-intro {
+  max-width: 760px;
+}
+
+.experience-intro h1 {
+  font: 400 clamp(44px, 5.5vw, 70px)/1.1 var(--serif);
+  letter-spacing: -2px;
+  margin: 8px 0 22px;
+}
+
+.experience-intro > p:not(.eyebrow) {
+  max-width: 580px;
+  font-size: 16px;
+  line-height: 1.7;
+  color: #5b6d52;
+}
+
+.career-summary {
+  display: flex;
+  gap: 65px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin: 36px 0 10px;
+  padding: 22px 0;
+}
+
+.career-summary > span {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font: 9px var(--mono);
+  letter-spacing: .7px;
+  color: var(--muted);
+}
+
+.career-summary strong {
+  font: 400 38px/1 var(--serif);
+  letter-spacing: -1px;
+  color: var(--ink);
+}
+
+.career-chapter {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 45px;
+  padding: 45px 0 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.career-margin {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  font: 10px/1.7 var(--mono);
+}
+
+.career-number {
+  font: 400 65px/1 var(--serif);
+  letter-spacing: -3px;
+  color: #a4b391;
+}
+
+.career-date {
+  color: var(--ink);
+}
+
+.career-discipline {
+  color: var(--muted);
+  font-size: 8px;
+  max-width: 150px;
+  line-height: 1.9;
+}
+
+.career-title h2 {
+  font: 400 clamp(30px, 3.8vw, 45px)/1.15 var(--serif);
+  letter-spacing: -1px;
+  margin: 10px 0 15px;
+}
+
+.career-title .eyebrow {
+  font-size: 10px;
+  color: #93653e;
+}
+
+.career-role {
+  font: 11px/1.7 var(--mono);
+  margin: 0 0 23px;
+}
+
+.career-details {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-width: 720px;
+  font-size: 14px;
+  color: #4d6047;
+}
+
+.career-details li {
+  position: relative;
+  padding-left: 19px;
+  line-height: 1.8;
+}
+
+.career-details li::before {
+  content: '↳';
+  position: absolute;
+  left: 0;
+  color: #92a37a;
+}
+
+.career-details li + li {
+  margin-top: 14px;
+}
+
+.career-more {
+  margin-top: 20px;
+}
+
+.career-more summary {
+  cursor: pointer;
+  font: 10px/1.7 var(--mono);
+  padding: 10px 0;
+  color: #577346;
+  width: fit-content;
+}
+
+.career-more summary:focus-visible {
+  outline: 3px solid var(--amber);
+  outline-offset: 4px;
+}
+
+.career-more summary span {
+  margin-left: 18px;
+}
+
+.career-more[open] summary {
+  margin-bottom: 10px;
+}
+
+.career-metrics {
+  display: flex;
+  gap: 48px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--line);
+}
+
+.career-metrics span {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  font: 8px var(--mono);
+  color: var(--muted);
+}
+
+.career-metrics strong {
+  font: 400 34px/1 var(--serif);
+  color: var(--ink);
+}
+
+.career-end {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 25px;
+  font: 9px/1.7 var(--mono);
+  color: var(--muted);
+}
+
+.career-end a {
+  color: var(--ink);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+@media (max-width: 700px) {
+  .experience-intro h1 {
+    font-size: 43px;
+    letter-spacing: -1.5px;
+  }
+  .experience-intro > p:not(.eyebrow) {
+    font-size: 14px;
+  }
+  .career-summary {
+    gap: 28px;
+    margin-top: 28px;
+  }
+  .career-summary strong {
+    font-size: 31px;
+  }
+  .career-summary > span {
+    font-size: 7px;
+    line-height: 1.8;
+  }
+  .career-chapter {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 30px 0;
+  }
+  .career-margin {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: center;
+    column-gap: 13px;
+    row-gap: 4px;
+  }
+  .career-number {
+    grid-row: span 2;
+    font-size: 38px;
+    letter-spacing: -2px;
+  }
+  .career-date {
+    font-size: 9px;
+  }
+  .career-discipline {
+    max-width: none;
+    font-size: 7px;
+  }
+  .career-title h2 {
+    font-size: 33px;
+    margin-top: 8px;
+  }
+  .career-role {
+    font-size: 10px;
+  }
+  .career-details {
+    font-size: 13px;
+  }
+  .career-metrics {
+    gap: 35px;
+  }
+  .career-metrics span {
+    font-size: 7px;
+    line-height: 1.6;
+  }
+  .career-metrics strong {
+    font-size: 29px;
+  }
+  .career-end {
+    font-size: 8px;
+    gap: 16px;
+  }
+}

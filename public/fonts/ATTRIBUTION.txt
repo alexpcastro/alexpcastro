@@ -1,0 +1,6 @@
+Open Sans ExtraBold (800), normal, subset for the Deloitte wordmark.
+Copyright 2020 The Open Sans Project Authors (https://github.com/googlefonts/opensans).
+Licensed under the SIL Open Font License, Version 1.1. See OFL-Open-Sans.txt.
+Downloaded from the official Google Fonts CSS API on November 11, 2026:
+https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap&text=Deloitte
+This small WOFF2 asset is self-hosted; viewing the page does not contact Google Fonts.

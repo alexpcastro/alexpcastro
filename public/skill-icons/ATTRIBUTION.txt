@@ -1,0 +1,3 @@
+All SVGs from Devicon v2.17.0, https://github.com/devicons/devicon/tree/v2.17.0/icons
+Distributed under the MIT license included in LICENSE.txt. Unmodified original variants; AWS uses original-wordmark.
+All trademarks belong to their respective owners. Marks identify technologies, not endorsements or certifications.
