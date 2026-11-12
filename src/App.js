@@ -3,6 +3,8 @@ import "./portfolio.css";
 import { useEffect, useRef } from "react";
 import ExperienceGallery from "./components/ExperienceGallery";
 import FloatingSkills from "./components/FloatingSkills";
+import EducationJourney from "./components/EducationJourney";
+import ContactFinale from "./components/ContactFinale";
 
 const legacySections = { projects: "experience", about: "contact" };
 
@@ -38,30 +40,9 @@ export default function App() {
 
       <FloatingSkills />
 
-      <section id="education" className="portfolio-education" tabIndex="-1" aria-labelledby="education-heading">
-        <h2 id="education-heading">Education</h2>
-        <div>
-          <h3>Fordham University</h3>
-          <p>MS, Computer Science · 2022<br />BS, Computer Science · 2017</p>
-          <p className="portfolio-small">AI and Data Science specializations.</p>
-        </div>
-        <div className="portfolio-study">
-          <p>Additional coursework at Esade and Oxford.<br />High school at the American School of Barcelona.</p>
-          <a className="portfolio-work-link" href="https://ieeexplore.ieee.org/document/9854976" target="_blank" rel="noopener noreferrer">Co-author, ScreenCoin · IEEE COINS 2022<span aria-hidden="true"> ↗</span><span className="visually-hidden"> (opens in a new tab)</span></a>
-        </div>
-      </section>
+      <EducationJourney />
 
-      <section id="contact" className="portfolio-contact" tabIndex="-1" aria-labelledby="contact-heading">
-        <div>
-          <h2 id="contact-heading">Let’s talk.</h2>
-          <nav className="portfolio-contact-links" aria-label="Contact Alex">
-            <a href="mailto:alexpcastro95@gmail.com">Email<span aria-hidden="true"> ↗</span></a>
-            <a href="https://linkedin.com/in/alexpcastro" target="_blank" rel="noopener noreferrer">LinkedIn<span aria-hidden="true"> ↗</span><span className="visually-hidden"> (opens in a new tab)</span></a>
-            <a href="https://github.com/alexpcastro" target="_blank" rel="noopener noreferrer">GitHub<span aria-hidden="true"> ↗</span><span className="visually-hidden"> (opens in a new tab)</span></a>
-          </nav>
-        </div>
-        <div className="portfolio-download" aria-hidden="true" />
-      </section>
+      <ContactFinale />
     </main>
   </div>;
 }

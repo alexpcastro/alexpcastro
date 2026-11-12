@@ -16,7 +16,7 @@ export const career = [
   {
     id: "columbia", role: "Research Assistant", company: "Columbia University", date: "October 2020 – December 2020",
     summary: "Built Python data-collection and video-metadata workflows for Qun Wang’s Google video search research at the Tow Center for Digital Journalism.",
-    link: "https://towcenter.columbia.edu/content/research-projects-0", linkLabel: "Tow Center research"
+    link: "https://towcenter.columbia.edu/content/research-projects-0", linkLabel: "Tow Center Research"
   },
   {
     id: "brokr", role: "Co-Owner & CTO", company: "BROKR.com LLC", date: "March 2017 – March 2020",

@@ -10,7 +10,7 @@ const tick = (ms = 100) => act(() => jest.advanceTimersByTime(ms));
 const main = () => container.querySelector("main");
 const entries = () => [...container.querySelectorAll(".portfolio-entry")];
 const entry = name => entries().find(item => item.querySelector(".portfolio-company").textContent === name);
-const companies = ["AI Advantage, Deloitte", "Fordham University", "Columbia University", "BROKR.com LLC", "Pure Digital", "APC Technology Group"];
+const companies = ["AI Advantage, Deloitte", "Disability Data Initiative, Fordham University", "Tow Center Research, Columbia University", "BROKR.com LLC", "Pure Digital", "APC Technology Group"];
 const navigate = hash => {
   act(() => { window.location.hash = hash; });
   tick();
@@ -26,6 +26,8 @@ const expectFullPortfolio = () => {
 
 beforeEach(() => {
   global.IS_REACT_ACT_ENVIRONMENT = true;
+  jest.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(() => Promise.resolve());
+  jest.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
   jest.useFakeTimers();
   window.history.replaceState(null, "", "/");
   sessionStorage.clear();
@@ -74,10 +76,10 @@ test("all six roles keep short summaries, correct dates and distinct research wo
   });
   expect(entry("APC Technology Group").querySelector(".portfolio-date").textContent).toBe("August 2009 – April 2015");
   expect(entry("Pure Digital").querySelector(".portfolio-date").textContent).toBe("April 2015 – March 2017");
-  expect(entry("Fordham University").textContent).toContain("March 2020 – December 2021");
-  expect(entry("Fordham University").textContent).toContain("Global Disability Data Initiative");
-  expect(entry("Columbia University").textContent).toContain("October 2020 – December 2020");
-  expect(entry("Columbia University").textContent).toContain("Tow Center for Digital Journalism");
+  expect(entry("Disability Data Initiative, Fordham University").textContent).toContain("March 2020 – December 2021");
+  expect(entry("Disability Data Initiative, Fordham University").textContent).toContain("Global Disability Data Initiative");
+  expect(entry("Tow Center Research, Columbia University").textContent).toContain("October 2020 – December 2020");
+  expect(entry("Tow Center Research, Columbia University").textContent).toContain("Tow Center for Digital Journalism");
   expect(entry("BROKR.com LLC").textContent).toContain("approximately $2M in monthly lead volume");
   expect(entry("BROKR.com LLC").textContent).not.toMatch(/revenue|commission|closed transactions/i);
   expect(main().textContent).not.toMatch(/\$1\.5M|\$20M|1,300|10M\+/);
@@ -87,14 +89,14 @@ test("career links retain verified external destinations without fallback contac
   renderApp();
   const external = [
     ["AI Advantage, Deloitte", "https://www.deloitte.com/global/en/about/press-room/deloitte-launches-ai-advantage-for-cfos.html"],
-    ["Fordham University", "https://www.disabilitydatainitiative.org/reports/disability-data-initiative-2021-report/"],
-    ["Columbia University", "https://towcenter.columbia.edu/content/research-projects-0"],
+    ["Disability Data Initiative, Fordham University", "https://www.disabilitydatainitiative.org/reports/disability-data-initiative-2021-report/"],
+    ["Tow Center Research, Columbia University", "https://towcenter.columbia.edu/content/research-projects-0"],
     ["Pure Digital", "https://puredigitalco.com/"],
   ];
   external.forEach(([company, href]) => {
     const link = entry(company).querySelector(".portfolio-work-link");
     expect(link.getAttribute("href")).toBe(href);
-    expect(link.textContent).toContain("opens in a new tab");
+    expect(link.getAttribute("aria-label")).toContain("opens in a new tab");
     expect(link.tabIndex).toBe(0);
   });
   container.querySelectorAll('a[target="_blank"]').forEach(link => {
@@ -123,7 +125,13 @@ test("all six experiences use distinct local career illustrations with accessibl
     expect(img.getAttribute("decoding")).toBe("async");
   });
   expect(new Set(pictures.map(img => img.src)).size).toBe(6);
-  expect(container.querySelector(".career-artwork, .portfolio-intro img, .portfolio-intro svg, video")).toBeNull();
+  expect(container.querySelector(".career-artwork, .portfolio-intro img, .portfolio-intro svg")).toBeNull();
+  const video = container.querySelector("video");
+  expect(container.querySelectorAll("video")).toHaveLength(1);
+  expect(video.getAttribute("src")).toBe("/artwork/video/deloitte-immersive-5s.mp4");
+  expect(video.getAttribute("poster")).toBe("/artwork/deloitte-neon-1280.jpg");
+  expect(video.loop).toBe(true);
+  expect(fs.existsSync(path.join(process.cwd(), "public", video.getAttribute("src")))).toBe(true);
 });
 
 test("decorative frames are curved, distinct and hidden from assistive technology", () => {
@@ -351,35 +359,84 @@ test("tabbing into the selector protects keyboard focus before any arrow key is 
 });
 
 
-test("phones show six vertically stacked image buttons and one expanded story", () => {
+test("phones keep the six original cards in order with one expanded story", () => {
   window.matchMedia.mockImplementation(query => ({ matches: query === "(max-width: 760px)", addEventListener: jest.fn(), removeEventListener: jest.fn() }));
   renderApp();
-  const controls = [...container.querySelectorAll("button.gallery-picture")];
+  const controls = [...container.querySelectorAll('button.gallery-picture')];
   expect(controls).toHaveLength(6);
+  expect(container.querySelector('.mobile-chapter-nav, [role="tablist"]')).toBeNull();
+  expect(container.querySelectorAll('img.career-scene')).toHaveLength(6);
   controls.forEach((button, index) => {
-    expect(button.querySelector("svg.organic-frame")).not.toBeNull();
-    expect(button.querySelector("img")).not.toBeNull();
-    expect(button.getAttribute("aria-expanded")).toBe(String(index === 0));
-    expect(entries()[index].hasAttribute("aria-hidden")).toBe(false);
-    expect(button.getAttribute("aria-controls")).toBe(entries()[index].querySelector(".experience-story").id);
+    expect(button.querySelector('svg.organic-frame')).not.toBeNull();
+    expect(button.querySelector('img')).not.toBeNull();
+    expect(button.getAttribute('aria-expanded')).toBe(String(index === 0));
+    expect(button.getAttribute('aria-controls')).toBe(entries()[index].querySelector('.experience-story').id);
+    expect(entries()[index].hidden).toBe(false);
+    expect(button.tabIndex).toBe(index === 0 ? 0 : -1);
   });
-  act(() => controls[3].click());
-  expect(controls[3].getAttribute("aria-expanded")).toBe("true");
-  expect(controls[0].getAttribute("aria-expanded")).toBe("false");
-  expect(entries()[3].querySelector(".experience-story").hidden).toBe(false);
-  expect(entries().filter(item => !item.querySelector(".experience-story").hidden)).toHaveLength(1);
-  act(() => { controls[3].focus(); controls[3].dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true })); });
-  expect(document.activeElement).toBe(controls[4]);
-  expect(controls[3].getAttribute("aria-expanded")).toBe("true");
-  act(() => controls[4].click());
-  expect(controls[4].getAttribute("aria-expanded")).toBe("true");
+  [3, 3, 5, 1, 0].forEach(index => {
+    act(() => controls[index].click());
+    expect(controls[index].getAttribute('aria-expanded')).toBe('true');
+    expect(entries().filter(item => item.classList.contains('is-active'))).toHaveLength(1);
+    expect(entries()[index].querySelector('.experience-story').hidden).toBe(false);
+    expect(entries().map(item => item.id)).toEqual(['experience-deloitte', 'experience-fordham', 'experience-columbia', 'experience-brokr', 'experience-pure-digital', 'experience-apc']);
+    entries().forEach((item, i) => expect(item.querySelector('.experience-story').getAttribute('aria-hidden')).toBe(String(i !== index)));
+    expect(container.querySelectorAll('video')).toHaveLength(1);
+    expect(container.querySelector('video').closest('.experience-card')).toBe(entries()[index]);
+  });
+  act(() => { controls[0].focus(); controls[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })); });
+  expect(document.activeElement).toBe(controls[1]);
+  expect(controls[1].getAttribute('aria-expanded')).toBe('true');
+  act(() => controls[1].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })));
+  expect(document.activeElement).toBe(controls[2]);
+  expect(controls[2].getAttribute('aria-expanded')).toBe('true');
 });
 
 
-test("gallery starts directly with images, without visible chips, headings or instructions", () => {
+test("gallery has a visible Experience title and no extra chips or instructions", () => {
   renderApp();
   expect(container.querySelector(".gallery-tabs, .gallery-heading, .gallery-count")).toBeNull();
-  expect(container.querySelector("#work-heading").classList.contains("visually-hidden")).toBe(true);
+  expect(container.querySelector("#work-heading").classList.contains("visually-hidden")).toBe(false);
+  expect(container.querySelector("#work-heading").textContent).toBe("Experience");
+  expect(container.querySelector("#experience").getAttribute("aria-labelledby")).toBe("work-heading");
   expect(container.querySelector("#gallery-help").classList.contains("visually-hidden")).toBe(true);
   expect(container.querySelectorAll("button.gallery-picture")).toHaveLength(6);
+});
+
+
+test("each open experience plays only its own local immersive video", () => {
+  renderApp();
+  const kinds = ["deloitte", "fordham", "columbia", "brokr", "pure-digital", "apc"];
+  const controls = container.querySelectorAll("button.gallery-picture");
+  const seen = new Set();
+  kinds.forEach((kind, index) => {
+    const previous = container.querySelector("video");
+    act(() => controls[index].click());
+    const video = container.querySelector("video");
+    expect(container.querySelectorAll("video")).toHaveLength(1);
+    expect(video.closest(".experience-card").classList.contains("is-active")).toBe(true);
+    expect(video.getAttribute("src")).toBe(`/artwork/video/${kind}-immersive-5s.mp4`);
+    expect(video.getAttribute("poster")).toBe(`/artwork/${kind}-neon-1280.jpg`);
+    expect(video.loop).toBe(true);
+    expect(video.muted).toBe(true);
+    expect(video.playsInline).toBe(true);
+    expect(fs.existsSync(path.join(process.cwd(), "public", video.getAttribute("src")))).toBe(true);
+    if (index > 0) expect(previous.isConnected).toBe(false);
+    seen.add(video.getAttribute("src"));
+  });
+  expect(seen.size).toBe(6);
+  expect(container.querySelectorAll("img.career-scene")).toHaveLength(6);
+  act(() => controls[0].click());
+  expect(container.querySelectorAll("video")).toHaveLength(1);
+  expect(container.querySelector("video").getAttribute("src")).toBe("/artwork/video/deloitte-immersive-5s.mp4");
+});
+
+test("all experience videos stay as stills for reduced-motion visitors", () => {
+  window.matchMedia.mockImplementation(query => ({ matches: query === "(prefers-reduced-motion: reduce)", addEventListener: jest.fn(), removeEventListener: jest.fn() }));
+  renderApp();
+  container.querySelectorAll("button.gallery-picture").forEach(control => {
+    act(() => control.click());
+    expect(container.querySelector("video, .gallery-motion-control")).toBeNull();
+    expect(container.querySelectorAll("img.career-scene")).toHaveLength(6);
+  });
 });

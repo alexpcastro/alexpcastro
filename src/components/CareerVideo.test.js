@@ -5,13 +5,14 @@ import { careerVideos } from "../data/careerVideos";
 
 let container, root, originalMatchMedia, originalObserver, visibilityDescriptor, connectionDescriptor;
 let observers, mediaQueries, connectionListeners, connection, play, pause;
+const originalClips = { ...careerVideos };
 const kinds = ["deloitte", "fordham", "columbia", "brokr", "pure-digital", "apc"];
 const render = () => act(() => root.render(<ExperienceGallery />));
 const enableClips = () => kinds.forEach(kind => { careerVideos[kind] = { src: `/test-only/${kind}.mp4` }; });
-const intersect = (visible = true) => act(() => observers[observers.length - 1].callback([
+const intersect = (visible = true) => act(() => observers.filter(observer => observer.target?.isConnected).forEach(observer => observer.callback([
   { isIntersecting: visible, intersectionRatio: visible ? 1 : 0 },
-]));
-const activeStory = () => container.querySelector('.experience-card.is-active .experience-story');
+])));
+const activeArtwork = () => container.querySelector('.experience-card.is-active .gallery-picture');
 const select = index => act(() => container.querySelectorAll(".gallery-picture")[index].click());
 const changeMotion = matches => act(() => {
   const media = mediaQueries.get("(prefers-reduced-motion: reduce)");
@@ -25,6 +26,7 @@ const setVisibility = value => act(() => {
 
 beforeEach(() => {
   global.IS_REACT_ACT_ENVIRONMENT = true;
+  Object.keys(careerVideos).forEach(key => { delete careerVideos[key]; });
   observers = [];
   mediaQueries = new Map();
   originalMatchMedia = window.matchMedia;
@@ -60,6 +62,7 @@ afterEach(() => {
   act(() => root.unmount());
   container.remove();
   Object.keys(careerVideos).forEach(key => { delete careerVideos[key]; });
+  Object.assign(careerVideos, originalClips);
   window.matchMedia = originalMatchMedia;
   global.IntersectionObserver = originalObserver;
   if (visibilityDescriptor) Object.defineProperty(document, "visibilityState", visibilityDescriptor);
@@ -70,10 +73,12 @@ afterEach(() => {
   delete global.IS_REACT_ACT_ENVIRONMENT;
 });
 
-test("the empty production map leaves six stills, no media requests and no video controls", () => {
+test("an empty clip map leaves six stills and no media requests, with motion controlled by the open artwork", () => {
   render();
   expect(container.querySelectorAll("img.career-scene")).toHaveLength(6);
-  expect(container.querySelector("video, source, .career-video-layer, .gallery-motion-control")).toBeNull();
+  expect(container.querySelector("video, source, .career-video-layer")).toBeNull();
+  expect(container.querySelector(".gallery-motion-control")).toBeNull();
+  expect(activeArtwork().getAttribute("aria-label")).toContain("Pause animation");
   expect(play).not.toHaveBeenCalled();
 });
 
@@ -110,21 +115,21 @@ test("only the open chapter loads in view and loops muted inline above its exact
   expect(video.classList.contains("is-playing")).toBe(false);
 });
 
-test("the separate pause control stops motion and preserves that choice across chapter changes", () => {
+test("the open artwork stops motion and preserves that choice across chapter changes", () => {
   enableClips(); render(); intersect();
-  let control = activeStory().querySelector(".gallery-motion-control");
-  expect(control.closest(".gallery-picture")).toBeNull();
-  expect(control.textContent).toBe("Pause animation");
+  let control = activeArtwork();
+  expect(control.classList.contains("gallery-picture")).toBe(true);
+  expect(control.getAttribute("aria-label")).toContain("Pause animation");
   expect(control.getAttribute("aria-pressed")).toBe("false");
   act(() => control.click());
   expect(pause).toHaveBeenCalled();
-  expect(control.textContent).toBe("Resume animation");
+  expect(control.getAttribute("aria-label")).toContain("Resume animation");
   expect(control.getAttribute("aria-pressed")).toBe("true");
   play.mockClear();
   select(2); intersect();
   expect(play).not.toHaveBeenCalled();
-  control = activeStory().querySelector(".gallery-motion-control");
-  expect(control.textContent).toBe("Resume animation");
+  control = activeArtwork();
+  expect(control.getAttribute("aria-label")).toContain("Resume animation");
   act(() => control.click());
   expect(play).toHaveBeenCalledTimes(1);
 });
@@ -155,7 +160,7 @@ test("reduced motion prevents video requests and reacts to live preference chang
   expect(container.querySelector("video")).not.toBeNull();
   changeMotion(true);
   expect(container.querySelector("video, .career-video-layer, .gallery-motion-control")).toBeNull();
-  expect(observers[0].disconnect).toHaveBeenCalled();
+  expect(observers.find(observer => observer.target?.classList.contains("career-video-layer")).disconnect).toHaveBeenCalled();
 });
 
 test("data-saving visitors keep stills without video requests or motion controls", () => {

@@ -1,0 +1,85 @@
+/* An open, borderless finale, aligned to the page and the surrounding sections. */
+.portfolio-contact.contact-finale { display: block; position: relative; margin-top: 64px; padding-top: 0; }
+.contact-stage { position: relative; isolation: isolate; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.contact-invitation { position: relative; z-index: 1; width: 65%; padding: 36px 0 48px; }
+.contact-finale h2 { margin: 0 0 20px; color: #f0ebe4; font: 400 clamp(74px, 8.8vw, 112px)/.98 var(--serif); letter-spacing: -4.5px; white-space: nowrap; }
+.contact-finale h2 > span { color: #edba83; }
+.contact-email { display: inline-flex; align-items: center; justify-content: space-between; gap: 45px; min-height: 56px; padding: 15px 22px; border: 1px solid #f5cfaa; border-radius: 100px; background: #edba83; color: #191726; font: 500 13px/1.5 var(--sans); text-decoration: none; transition: background-color 200ms, box-shadow 200ms; }
+.contact-email svg { width: 20px; height: 20px; transition: transform 240ms cubic-bezier(.22,.8,.24,1); }
+.contact-email:hover { background: #f5cfaa; box-shadow: 0 0 26px #edba8314; }
+.contact-email:hover svg, .contact-email:focus-visible svg { transform: translate(2px, -2px); }
+.contact-address { margin: 14px 0 0; color: #b6b8cc; font: 10px/1.6 var(--mono); overflow-wrap: anywhere; }
+.contact-stage-footer { position: relative; z-index: 1; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 0; padding: 15px 0 18px; border-top: 1px solid #d1b4f51c; }
+.contact-finale .portfolio-contact-links { display: flex; flex-wrap: wrap; gap: 12px 30px; }
+.contact-finale .portfolio-contact-links a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; color: #c7c3d6; font: 11px/1.5 var(--mono); text-decoration: none; }
+.contact-finale .portfolio-contact-links svg { width: 14px; height: 14px; color: #d1b4f5; transition: transform 220ms; }
+.contact-finale .portfolio-contact-links a:hover { color: #f0ebe4; text-decoration: underline; text-underline-offset: 5px; }
+.contact-finale .portfolio-contact-links a:hover svg { transform: translate(2px, -2px); }
+.contact-signature { color: #9695ad; font: 10px/1.5 var(--mono); white-space: nowrap; }
+.contact-back-top { display: flex; align-items: center; gap: 9px; width: fit-content; min-height: 44px; margin: 18px 0 0 auto; color: #b6b8cc; font: 10px/1.5 var(--mono); text-decoration: none; }
+.contact-back-top:hover { color: #edba83; }
+.contact-finale .portfolio-download { display: none; }
+/* Decorative motion plays once for four seconds, then settles. */
+.contact-orbit { position: absolute; z-index: 0; top: -14px; right: 0; width: min(450px, 44%); aspect-ratio: 1; pointer-events: none; }
+.contact-orbit-halo { position: absolute; inset: 8%; border-radius: 50%; background: radial-gradient(circle, #d1b4f50d 0 30%, #edba8306 50%, transparent 72%); }
+.contact-orbit-flower { position: absolute; inset: 22%; width: 56%; height: 56%; transform: rotate(-12deg); animation: contact-flower-turn 4s ease-out both; animation-play-state: paused; }
+.contact-petal { stroke-width: .7; }
+.contact-petal--violet { fill: #d1b4f52b; stroke: #d1b4f5a6; }
+.contact-petal--blue { fill: #93b9ef26; stroke: #93b9ef99; }
+.contact-petal--rose { fill: #eca7bd2b; stroke: #eca7bda6; }
+.contact-petal--gold { fill: #edba8333; stroke: #edba83b3; }
+.contact-orbit-ring { position: absolute; inset: 9%; border: 1px solid #d1b4f526; border-radius: 50%; animation: contact-orbit-turn 4s ease-out both; animation-play-state: paused; }
+.contact-orbit-ring--inner { inset: 18%; border-color: #edba8321; animation-direction: reverse; }
+.contact-orbit-ring > span { position: absolute; top: 50%; left: -4px; width: 8px; height: 8px; margin-top: -4px; border-radius: 50%; background: #d1b4f5; box-shadow: 0 0 0 6px #d1b4f509; }
+.contact-orbit-ring--inner > span { left: auto; right: -3px; width: 6px; height: 6px; margin-top: -3px; background: #edba83; box-shadow: 0 0 0 6px #edba8309; }
+.contact-orbit-spark { position: absolute; top: 20%; right: 18%; width: 34px; height: 10px; border: 1px solid #93b9ef5c; border-radius: 100px; background: #93b9ef12; transform: rotate(-32deg); animation: contact-spark-drift 4s ease-out both; animation-play-state: paused; }
+.contact-orbit-spark--two { top: auto; right: auto; bottom: 17%; left: 22%; width: 28px; border-color: #eca7bd5c; background: #eca7bd12; }
+.contact-finale[data-motion="running"] .contact-orbit-flower,
+.contact-finale[data-motion="running"] .contact-orbit-ring,
+.contact-finale[data-motion="running"] .contact-orbit-spark { animation-play-state: running; }
+.contact-finale[data-motion-allowed="false"] .contact-orbit * { animation: none; }
+@keyframes contact-flower-turn { from { transform: rotate(-28deg) scale(.92); } to { transform: rotate(-12deg) scale(1); } }
+@keyframes contact-orbit-turn { from { transform: rotate(-18deg); } to { transform: rotate(12deg); } }
+@keyframes contact-spark-drift { from { transform: translateY(9px) rotate(-40deg); } to { transform: translateY(0) rotate(-32deg); } }
+@media (max-width: 1000px) {
+  .contact-orbit { width: 43%; top: 32px; opacity: .8; }
+}
+@media (max-width: 760px) {
+  .portfolio-contact.contact-finale { margin-top: 38px; }
+  .contact-invitation { width: 100%; padding: 230px 0 38px; }
+  .contact-finale h2 { font-size: clamp(64px, 13vw, 88px); letter-spacing: -3px; }
+  .contact-orbit { top: -35px; right: 0; width: 310px; max-width: 100%; opacity: 1; }
+  .contact-orbit-ring { inset: 11%; }
+  .contact-orbit-ring--inner { inset: 20%; }
+  .contact-stage-footer { gap: 16px; }
+  .contact-finale .portfolio-contact-links { gap: 20px; }
+}
+@media (max-width: 400px) {
+  .contact-invitation { padding: 200px 0 30px; }
+  .contact-finale h2 { font-size: clamp(54px, 16vw, 64px); letter-spacing: -2.5px; }
+  .contact-signature { display: none; }
+  .contact-orbit { top: -10px; width: 240px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .contact-finale .contact-orbit * { animation: none; }
+  .contact-email, .contact-email svg, .contact-finale .portfolio-contact-links svg { transition: none; }
+  .contact-email:hover svg, .contact-email:focus-visible svg, .contact-finale .portfolio-contact-links a:hover svg { transform: none; }
+}
+@media (forced-colors: active) {
+  .contact-orbit { display: none; }
+  .contact-finale h2 > span, .contact-signature { color: CanvasText; }
+  .contact-finale .contact-email, .contact-finale .contact-email:hover { border: 1px solid LinkText; background: Canvas; color: LinkText; box-shadow: none; }
+  .contact-finale .portfolio-contact-links svg { color: LinkText; }
+  .contact-stage-footer { border-color: CanvasText; }
+  .contact-invitation { padding-top: 48px; }
+}
+@media print {
+  .contact-orbit, .contact-back-top { display: none; }
+  .portfolio-contact.contact-finale { margin-top: 24px; break-inside: avoid; }
+  .contact-stage { background: transparent; box-shadow: none; overflow: visible; }
+  .contact-invitation { width: 100%; padding: 12px 0; }
+  .contact-finale h2 { font-size: 42px; letter-spacing: -1px; }
+  .contact-finale h2, .contact-finale h2 > span, .contact-finale p, .contact-signature, .contact-finale a { color: #111 !important; }
+  .contact-email { padding: 0; min-height: 32px; background: none; border: 0; }
+  .contact-stage-footer { margin: 0; padding: 0; border: 0; }
+}

@@ -137,3 +137,128 @@ test('motion suspends outside the viewport and in background tabs, with cleanup'
   expect(disconnect).toHaveBeenCalledTimes(1);
   expect(media.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
 });
+
+function interactiveRiver() {
+  const callbacks = new Map();
+  let sequence = 0, time = 0;
+  jest.spyOn(window, 'requestAnimationFrame').mockImplementation(callback => { callbacks.set(++sequence, callback); return sequence; });
+  jest.spyOn(window, 'cancelAnimationFrame').mockImplementation(id => callbacks.delete(id));
+  const fine = { matches: true, addEventListener: jest.fn(), removeEventListener: jest.fn() };
+  window.matchMedia.mockImplementation(query => query.includes('any-pointer') ? fine : media);
+  render();
+  const buoy = field().querySelector('.skill-drift');
+  jest.spyOn(field(), 'getBoundingClientRect').mockReturnValue({ left: 0, right: 600, top: 0, bottom: 420, width: 600, height: 420 });
+  field().querySelectorAll('.skills-lane').forEach(lane => jest.spyOn(lane, 'getBoundingClientRect').mockReturnValue({ height: 96 }));
+  field().querySelectorAll('.skill-drift').forEach(node => jest.spyOn(node, 'getBoundingClientRect').mockReturnValue({ left: -2000, right: -1900, top: 27, width: 100, height: 42 }));
+  buoy.getBoundingClientRect.mockReturnValue({ left: 100, right: 250, top: 27, width: 150, height: 42 });
+  const point = (type = 'pointermove', pointerType = 'mouse', x = 170, y = 30) => {
+    const event = new Event(type, { bubbles: true, cancelable: true });
+    Object.defineProperties(event, { pointerType: { value: pointerType }, clientX: { value: x }, clientY: { value: y } });
+    act(() => field().dispatchEvent(event));
+    return event;
+  };
+  const frames = count => {
+    for (let index = 0; index < count; index++) {
+      const pending = [...callbacks.values()]; callbacks.clear(); time += 1000 / 60;
+      act(() => pending.forEach(callback => callback(time)));
+    }
+  };
+  return { buoy, point, frames, callbacks, fine, displacement: () => parseFloat(buoy.style.getPropertyValue('--impact-y')) || 0 };
+}
+
+test('mouse contact displaces only the vertical pose, then settles and stops the frame loop', () => {
+  const river = interactiveRiver();
+  expect(river.callbacks.size).toBe(0);
+  river.point(); river.frames(12);
+  expect(river.displacement()).toBeGreaterThan(5);
+  expect(river.displacement()).toBeLessThan(32);
+  expect(river.buoy.style.getPropertyValue('--impact-x')).toBe('');
+  expect(field().querySelector('.skills-track').style.transform).toBe('');
+  river.point('pointerleave'); river.frames(240);
+  expect(river.displacement()).toBe(0);
+  expect(river.callbacks.size).toBe(0);
+});
+
+test('touch gestures and coarse pointers are never intercepted or animated by the hit response', () => {
+  const river = interactiveRiver();
+  expect(river.point('pointermove', 'touch').defaultPrevented).toBe(false);
+  expect(river.callbacks.size).toBe(0);
+  river.fine.matches = false;
+  river.point();
+  expect(river.callbacks.size).toBe(0);
+});
+
+test('Pause freezes a displaced pose, Resume recovers, and View all cancels pending work', () => {
+  const river = interactiveRiver();
+  river.point(); river.frames(12);
+  const displaced = river.displacement();
+  act(() => control().click());
+  expect(river.callbacks.size).toBe(0);
+  river.frames(10);
+  expect(river.displacement()).toBe(displaced);
+  act(() => control().click());
+  river.frames(240);
+  expect(river.displacement()).toBe(0);
+  expect(river.callbacks.size).toBe(0);
+  river.point(); river.frames(4);
+  act(() => view().click());
+  expect(river.callbacks.size).toBe(0);
+  expect(field()).toBeNull();
+});
+
+test('cancellation settles a hit and unmount removes all queued interaction frames', () => {
+  const river = interactiveRiver();
+  river.point(); river.frames(12);
+  river.point('pointercancel'); river.frames(240);
+  expect(river.displacement()).toBe(0);
+  expect(river.callbacks.size).toBe(0);
+  river.point(); river.frames(2);
+  act(() => root.render(null));
+  expect(river.callbacks.size).toBe(0);
+  expect(river.fine.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+});
+
+test('switching to coarse input or reduced motion cancels an active hit immediately', () => {
+  const river = interactiveRiver();
+  river.point(); river.frames(8);
+  expect(river.displacement()).not.toBe(0);
+  act(() => {
+    river.fine.matches = false;
+    river.fine.addEventListener.mock.calls[0][1]();
+  });
+  expect(river.callbacks.size).toBe(0);
+  expect(river.displacement()).toBe(0);
+  act(() => {
+    river.fine.matches = true;
+    river.fine.addEventListener.mock.calls[0][1]();
+  });
+  river.point(); river.frames(8);
+  act(() => { media.matches = true; media.addEventListener.mock.calls[0][1](); });
+  expect(field()).toBeNull();
+  expect(river.callbacks.size).toBe(0);
+});
+
+
+test('the compact chip catalog keeps category styling, full names, and the original river', () => {
+  render();
+  const originalRiver = field().innerHTML;
+  act(() => view().click());
+  const lists = [...catalog().querySelectorAll('ul[role="list"]')];
+  expect(lists).toHaveLength(skillSections.length);
+  lists.forEach((list, index) => {
+    const chips = [...list.querySelectorAll('li')];
+    expect(chips.map(item => item.textContent)).toEqual(skillSections[index].skills);
+    chips.forEach(chip => {
+      expect(chip.classList.contains('skill-chip')).toBe(true);
+      expect(chip.classList.contains(`skill-chip--${skillSections[index].id}`)).toBe(true);
+      expect(chip.classList.contains('skill-chip--featured')).toBe(false);
+    });
+  });
+  expect(catalog().querySelector('[hidden], [aria-hidden="true"]')).toBeNull();
+  expect(catalog().textContent).toContain('Gemini Enterprise Agent Platform (formerly Vertex AI)');
+  expect(catalog().querySelectorAll('li')).toHaveLength(53);
+  act(() => view().click());
+  expect(field().querySelectorAll('.skills-track')).toHaveLength(4);
+  expect(field().querySelectorAll('.skill-chip')).toHaveLength(106);
+  expect(field().innerHTML).toBe(originalRiver);
+});

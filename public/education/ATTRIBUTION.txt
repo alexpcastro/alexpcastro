@@ -1,3 +1,21 @@
+Education imagery
+
+AI-generated illustrations
+Created with OpenAI image generation on November 12, 2026 for Alex Castro's portfolio. These are imaginative scenes inspired by study subjects and locations, not documentary campus photographs or literal historical classrooms. No institutional endorsement is implied.
+
+asb-artwork-{640,1280}.jpg: Barcelona high-school desk with notebooks, a laptop and a small server, representing curiosity and early hosting projects.
+oxford-artwork-{640,1280}.jpg: Physics scene with a prism, spectral waves and pendulum against Oxford winter spires.
+
+fordham-bs-artwork-{640,1280}.jpg: Undergraduate computer science scene with a coding desk, branching algorithm structure, books and a New York university backdrop.
+
+esade-artwork-{640,1280}.jpg: Business scene with a glowing miniature market and growth model on a seminar table, with a Barcelona backdrop.
+
+fordham-ms-artwork-{640,1280}.jpg: Graduate computer science scene with an advanced computing lattice above a laptop and research notebook, against a New York university night backdrop.
+
+Original generated PNGs are preserved locally. Web derivatives are resized to 640x640 and 1280x1280 progressive JPEG; display cropping is applied in CSS. Generated illustrations retain their original colors.
+
+Prior campus photographs (retained in the asset directory but no longer displayed in the Education timeline):
+
 Campus photography used for institutional illustration. No claim that a particular course was taught in the pictured building. No endorsement implied.
 
 fordham.jpg — Cunniffe House, 2017. Indefatigable2 at English Wikipedia.
@@ -14,3 +32,17 @@ oxford.jpg — 1 oxford aerial panorama 2016. Chensiyuan.
 https://commons.wikimedia.org/wiki/File:1_oxford_aerial_panorama_2016.jpg
 CC BY-SA 4.0: https://creativecommons.org/licenses/by-sa/4.0/
 Resized to 1280x430; cropped in the page layout.
+
+asb-campus.jpg — Aerial view of the American School of Barcelona campus, Esplugues de Llobregat.
+Image derived from the Territorial Orthophoto of the Institut Cartogràfic i Geològic de Catalunya (ICGC), used under CC BY 4.0.
+CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+Product and license: https://www.icgc.cat/en/Geoinformation-and-Maps/Data-and-products/Image/Territorial-Orthophoto
+Reuse terms: https://www.icgc.cat/en/ICGC/Public-Information/Transparency/Re-use-information
+Campus location verified at 41.38355, 2.08439, with the school's official campus page: https://www.asbarcelona.com/aboutinternationalschool/campus-and-facilities
+WMS export, retrieved November 12, 2026:
+https://geoserveis.icgc.cat/servei/catalunya/orto-territorial/wms?service=WMS&request=GetMap&version=1.3.0&layers=ortofoto_color_vigent&styles=&format=image%2Fjpeg&width=1000&height=720&crs=EPSG%3A3857&bbox=231833.2334145915%2C5068936.874335287%2C232233.2334145915%2C5069224.874335287
+1000x720 geographic excerpt. The downloaded image is unchanged; display crop and mild desaturation are applied in page CSS. Contemporary campus illustration, not a claim about the campus appearance in 2013. No generative edits.
+
+AI-generated video previews
+Created from the five matching generated illustrations on November 12, 2026 using Omni 1.2 through Google Cloud Model Garden. These remain imaginative scenes, not documentary campus footage.
+video/{asb,oxford,fordham-bs,esade,fordham-ms}-immersive-5s.mp4: five seconds each, 640x360 at 24 fps, H.264, silent, fast-start MP4. Original video streams are retained; audio is removed. The model reframes square source art into landscape, then the page crops to fit its existing artwork slots. Opening framing differs from the still. Each full forward motion repeats with a visible restart rather than a seamless loop.
