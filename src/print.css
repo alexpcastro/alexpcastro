@@ -1,0 +1,59 @@
+/* A paper edition of the same content, not a screenshot of the animated UI.
+   Keep after component styles so desktop/mobile/selection state cannot alter it. */
+@page { size: auto; margin: 11mm 13mm; }
+@media print {
+  :root { color-scheme: light; }
+  html, body, #root, #app.portfolio-shell { background: #fff !important; color: #18202a !important; min-height: 0; height: auto; }
+  #app.portfolio-shell { container-type: normal; }
+  .portfolio-shell *, .portfolio-shell *::before, .portfolio-shell *::after { animation: none !important; transition: none !important; text-shadow: none !important; box-shadow: none !important; }
+  .portfolio-page { width: 100%; max-width: none; margin: 0; padding: 0; font: 10pt/1.35 Arial, sans-serif; }
+  .portfolio-page a { color: #18202a !important; text-decoration-color: #68717b !important; }
+  .skip-link, .gallery-picture, .gallery-picture-caption, .skills-field, .skills-controls, .skills-transition-layer, .education-art-control, .education-motion-control, .education-video, .organic-frame, .contact-art, .contact-back-top, .contact-email, .contact-signature { display: none !important; }
+  .portfolio-intro { padding: 0 0 12pt; text-align: left; border-bottom: 1pt solid #27323e; }
+  .portfolio-intro .intro-statement { margin: 0; max-width: 600pt; color: #18202a; font: 400 21pt/1.16 Arial, sans-serif; letter-spacing: -.6pt; }
+  .portfolio-page .deloitte-brand, .portfolio-page .deloitte-brand.is-ready .deloitte-letters { color: #18202a !important; -webkit-text-fill-color: #18202a !important; background: none !important; background-clip: border-box; }
+  .portfolio-page .deloitte-dot { background: transparent; border: .08em solid #638e1c; width: .16em; height: .16em; }
+  .portfolio-page > section { width: 100%; margin: 8pt 0 0 !important; padding: 0; }
+  .portfolio-page > .portfolio-intro { margin-top: 0 !important; padding-bottom: 9pt; }
+  .experience-heading-row, .skills-heading-row, .education-heading-row { margin: 0 0 7pt; padding: 0; width: 100%; min-height: 0; }
+  .experience-heading-row h2, .skills-heading-row h2, .education-journey .education-heading-row h2 { margin: 0; color: #455260; font: 700 9pt/1.2 Arial, sans-serif; letter-spacing: 1.2pt; text-transform: uppercase; }
+  .experience-gallery, .gallery-track { display: block; width: 100%; height: auto; min-height: 0; overflow: visible; container-type: normal; padding: 0; }
+  .portfolio-entry.experience-card, .portfolio-entry.experience-card.is-active { display: block; width: 100%; height: auto !important; min-height: 0; padding: 0; margin: 0 0 7pt; border: 0; border-radius: 0; opacity: 1; transform: none !important; background: none !important; break-inside: avoid; }
+  .experience-card-surface { display: block; height: auto; min-height: 0; overflow: visible; border: 0; transform: none !important; }
+  .experience-card-surface::before, .experience-story .portfolio-date::before { display: none; }
+  .experience-gallery .experience-story, .experience-gallery .experience-story[hidden] { display: grid; grid-template-columns: 1fr auto; gap: 2pt 12pt; visibility: visible; opacity: 1; position: static; width: 100%; height: auto; min-height: 0; padding: 0; transform: none; }
+  .experience-story > * { opacity: 1 !important; visibility: visible !important; transform: none !important; }
+  .experience-story .portfolio-date { grid-column: 2; grid-row: 1; margin: 0; padding: 0; color: #465361; font: 8.5pt/1.4 Arial, sans-serif; white-space: nowrap; }
+  .experience-story h3 { grid-column: 1; grid-row: 1; margin: 0; color: #18202a; font: 700 11pt/1.2 Arial, sans-serif; letter-spacing: 0; }
+  .experience-story .portfolio-company { grid-column: 1 / -1; margin: 0; color: #394550; font: 600 9pt/1.25 Arial, sans-serif; }
+  .experience-story .portfolio-work-link { font: inherit; text-underline-offset: 2pt; }
+  .experience-story .portfolio-summary { grid-column: 1 / -1; margin: 1pt 0 0; padding: 0; border: 0; max-width: none; color: #29333e; font: 9.5pt/1.3 Arial, sans-serif; }
+  .portfolio-skills { margin-left: 0; }
+  .skills-catalog, .skills-catalog.visually-hidden, .skills-catalog:not(.visually-hidden) { display: grid; grid-template-columns: 1fr 1fr; position: static; width: 100%; height: auto; margin: 0; padding: 0; gap: 7pt 18pt; clip: auto; clip-path: none; overflow: visible; white-space: normal; }
+  .skills-category h3 { margin: 0 0 2pt; color: #26313d; font: 700 9pt/1.2 Arial, sans-serif; }
+  .skills-category ul { display: block; line-height: 1.3; }
+  .skills-category li { display: inline; }
+  .skills-category li:not(:last-child)::after { content: ' · '; color: #68717b; }
+  .skills-category .skill-chip { display: inline; margin: 0; padding: 0; border: 0; border-radius: 0; background: none; color: #29333e; font: 8.5pt/1.35 Arial, sans-serif; }
+  .portfolio-education.education-journey { display: block; border: 0; }
+  .education-card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5pt 18pt; }
+  .education-stop, .education-art-frame, .education-art-surface, .education-stop-art { display: block; padding: 0; min-height: 0; height: auto; aspect-ratio: auto; border: 0; border-radius: 0; background: none; transform: none !important; }
+  .education-stop-art > img, .education-stop-art::after { display: none; }
+  .education-stop-heading { display: block; position: static; padding: 0; margin: 0; background: none; }
+  .education-journey .education-stop h3 { margin: 0; padding: 0; font: 600 9pt/1.3 Arial, sans-serif; letter-spacing: 0; }
+  .education-journey p.education-date-chip { position: static; float: right; margin: 0 0 0 5pt; padding: 0; font: 8pt/1.45 Arial, sans-serif; border: 0; backdrop-filter: none; }
+  .education-journey p.education-stop-place { display: none; }
+  .education-journey p.education-stop-institution { margin: 0; font: 8pt/1.3 Arial, sans-serif; }
+  .education-stop[data-print-detail]::after { content: attr(data-print-detail); display: block; color: #465361; font: 8pt/1.3 Arial, sans-serif; }
+  .portfolio-contact.contact-finale { border-top: .5pt solid #b4bbc2; padding-top: 7pt; break-inside: avoid; }
+  .contact-stage { display: flex; justify-content: space-between; align-items: center; gap: 12pt; }
+  .contact-invitation { display: flex; align-items: baseline; gap: 12pt; width: auto; padding: 0; }
+  .contact-finale h2 { margin: 0; font: 600 11pt/1.2 Arial, sans-serif; letter-spacing: 0; }
+  .contact-address { margin: 0; font: 9pt/1.3 Arial, sans-serif; }
+  .contact-stage-footer { margin: 0; padding: 0; border: 0; }
+  .contact-finale .portfolio-contact-links { gap: 10pt; }
+  .contact-finale .portfolio-contact-links a { min-height: 0; font: 8.5pt/1.3 Arial, sans-serif; }
+  .portfolio-contact-links svg, .portfolio-contact-links a[data-print-url] > span { display: none; }
+  .portfolio-contact-links a[data-print-url]::after { content: attr(data-print-url); }
+}
+

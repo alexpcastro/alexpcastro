@@ -28,6 +28,7 @@ beforeEach(() => {
   global.IS_REACT_ACT_ENVIRONMENT = true;
   jest.spyOn(HTMLMediaElement.prototype, "play").mockImplementation(() => Promise.resolve());
   jest.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => {});
+  jest.spyOn(HTMLMediaElement.prototype, "load").mockImplementation(() => {});
   jest.useFakeTimers();
   window.history.replaceState(null, "", "/");
   sessionStorage.clear();
@@ -127,7 +128,7 @@ test("all six experiences use distinct local career illustrations with accessibl
   expect(new Set(pictures.map(img => img.src)).size).toBe(6);
   expect(container.querySelector(".career-artwork, .portfolio-intro img, .portfolio-intro svg")).toBeNull();
   const video = container.querySelector("video");
-  expect(container.querySelectorAll("video")).toHaveLength(1);
+  expect(container.querySelectorAll(".experience-card video")).toHaveLength(1);
   expect(video.getAttribute("src")).toBe("/artwork/video/deloitte-immersive-5s.mp4");
   expect(video.getAttribute("poster")).toBe("/artwork/deloitte-neon-1280.jpg");
   expect(video.loop).toBe(true);
@@ -268,9 +269,9 @@ test("education and contacts end the page with the resume area left blank and no
   const sections = [...main().children].map(element => element.id);
   expect(sections).toEqual(["home", "experience", "skills", "education", "contact"]);
   const education = container.querySelector("#education");
-  expect(education.textContent).toContain("MS, Computer Science · 2022");
-  expect(education.textContent).toContain("BS, Computer Science · 2017");
-  expect(education.textContent.length).toBeLessThan(500);
+  expect(education.querySelector('.education-stop--fordham-ms').getAttribute("aria-label")).toContain("MS Computer Science, 2020–2022");
+  expect(education.querySelector('.education-stop--fordham-bs').getAttribute("aria-label")).toContain("BS Computer Science, 2013–2017");
+  expect(education.textContent.length).toBeLessThan(800);
   const contact = container.querySelector("#contact");
   ["mailto:alexpcastro95@gmail.com", "https://linkedin.com/in/alexpcastro", "https://github.com/alexpcastro"].forEach(href => {
     expect(contact.querySelector(`a[href="${href}"]`)).not.toBeNull();
@@ -381,7 +382,7 @@ test("phones keep the six original cards in order with one expanded story", () =
     expect(entries()[index].querySelector('.experience-story').hidden).toBe(false);
     expect(entries().map(item => item.id)).toEqual(['experience-deloitte', 'experience-fordham', 'experience-columbia', 'experience-brokr', 'experience-pure-digital', 'experience-apc']);
     entries().forEach((item, i) => expect(item.querySelector('.experience-story').getAttribute('aria-hidden')).toBe(String(i !== index)));
-    expect(container.querySelectorAll('video')).toHaveLength(1);
+    expect(container.querySelectorAll('.experience-card video')).toHaveLength(1);
     expect(container.querySelector('video').closest('.experience-card')).toBe(entries()[index]);
   });
   act(() => { controls[0].focus(); controls[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })); });
@@ -413,7 +414,7 @@ test("each open experience plays only its own local immersive video", () => {
     const previous = container.querySelector("video");
     act(() => controls[index].click());
     const video = container.querySelector("video");
-    expect(container.querySelectorAll("video")).toHaveLength(1);
+    expect(container.querySelectorAll(".experience-card video")).toHaveLength(1);
     expect(video.closest(".experience-card").classList.contains("is-active")).toBe(true);
     expect(video.getAttribute("src")).toBe(`/artwork/video/${kind}-immersive-5s.mp4`);
     expect(video.getAttribute("poster")).toBe(`/artwork/${kind}-neon-1280.jpg`);
@@ -427,7 +428,7 @@ test("each open experience plays only its own local immersive video", () => {
   expect(seen.size).toBe(6);
   expect(container.querySelectorAll("img.career-scene")).toHaveLength(6);
   act(() => controls[0].click());
-  expect(container.querySelectorAll("video")).toHaveLength(1);
+  expect(container.querySelectorAll(".experience-card video")).toHaveLength(1);
   expect(container.querySelector("video").getAttribute("src")).toBe("/artwork/video/deloitte-immersive-5s.mp4");
 });
 

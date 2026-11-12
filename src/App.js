@@ -5,6 +5,7 @@ import ExperienceGallery from "./components/ExperienceGallery";
 import FloatingSkills from "./components/FloatingSkills";
 import EducationJourney from "./components/EducationJourney";
 import ContactFinale from "./components/ContactFinale";
+import "./print.css";
 
 const legacySections = { projects: "experience", about: "contact" };
 

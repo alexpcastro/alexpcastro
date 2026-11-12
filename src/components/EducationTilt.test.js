@@ -9,8 +9,9 @@ const COMPACT = '(max-width: 900px)';
 const POINTER = '(hover: hover) and (pointer: fine)';
 let root, container, originalMedia, originalObserver, originalConnection, originalRAF, originalCancel;
 let media, observers, connection, frames, frameId, time, visibility, geometry;
-const cards = () => [...container.querySelectorAll('.education-art-frame')];
-const buttons = () => [...container.querySelectorAll('.education-art-control')];
+const keys = ["pine-crest", "beau-soleil", "id-tech-miami", "barcelona", "oxford", "fordham-bs", "esade", "fordham-ms"];
+const cards = () => keys.map(key => container.querySelector(`.education-stop--${key} .education-art-frame`)).filter(Boolean);
+const buttons = () => keys.map(key => container.querySelector(`.education-stop--${key} .education-art-control`));
 const send = (target, type, extras = {}) => act(() => {
   const event = new Event(type, { bubbles: true, cancelable: true });
   Object.assign(event, extras); target.dispatchEvent(event);
@@ -102,13 +103,13 @@ test('tilt shares the Experience easing while the matching hover video remains i
   expect(geometry.mock.instances.every(node => node === cards()[0])).toBe(true);
   expect(frames.size).toBe(0);
   send(buttons()[0], 'pointerout', { pointerType: 'mouse', relatedTarget: document.body }); advance();
-  expect(container.querySelector('video')).toBeNull(); expectReset();
+  expect(container.querySelectorAll('video')).toHaveLength(1); expectReset();
 });
 
 test('rapid card switches retain one video and return the previous tilt to neutral', () => {
   ready(); hover(0); move(0); advance(); hover(1); move(1); advance();
   expect(container.querySelectorAll('video')).toHaveLength(1);
-  expect(container.querySelector('video').getAttribute('src')).toContain('oxford');
+  expect(container.querySelector('video').getAttribute('src')).toContain('beau-soleil');
   expect(angle(0, 'x')).toBe(0); expect(angle(1, 'x')).toBe(-10);
 });
 
@@ -116,9 +117,11 @@ test('compact layouts and touch/coarse input remain untilted while tap playback 
   ready(); move(0, 'touch'); move(0, 'pen'); expectReset();
   updateMedia(POINTER, false); move(); expectReset(); updateMedia(POINTER, true);
   move(); advance(); expect(angle(0, 'x')).toBe(-10);
-  updateMedia(COMPACT, true); expectReset(); move(); expectReset();
-  send(buttons()[0], 'pointerdown', { pointerType: 'touch' }); act(() => buttons()[0].click());
-  expect(container.querySelector('video')).not.toBeNull(); expectReset();
+  updateMedia(COMPACT, true); move();
+  cards().forEach(card => expect(card.hasAttribute('data-tilting')).toBe(false));
+  send(buttons()[1], 'pointerdown', { pointerType: 'touch' }); act(() => buttons()[1].click());
+  expect(container.querySelector('video')).not.toBeNull();
+  cards().forEach(card => expect(card.hasAttribute('data-tilting')).toBe(false));
   updateMedia(COMPACT, false); move(); advance(); expect(angle(0, 'x')).toBe(-10);
 });
 
@@ -132,7 +135,7 @@ test('pause, reduced motion, save-data and hidden pages cancel transforms and sc
 });
 
 test('offscreen artwork, keyboard input and pointer cancellation reset tilt without breaking keyboard previews', () => {
-  ready(); move(); advance(2); intersect(false, '.education-stop--barcelona .education-stop-art'); expectReset(); intersect();
+  ready(); move(); advance(2); intersect(false, '.education-stop--pine-crest .education-stop-art'); expectReset(); intersect();
   move(); advance(2); act(() => buttons()[0].focus()); send(buttons()[0], 'keydown', { key: 'Tab' }); expectReset();
   expect(container.querySelector('video')).not.toBeNull();
   send(buttons()[0], 'keydown', { key: 'Escape' }); expect(container.querySelector('video')).toBeNull();

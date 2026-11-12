@@ -7,9 +7,9 @@ import { educationVideos } from "../data/educationVideos";
 
 let root, container, originalMedia, originalObserver, originalConnection, observers, media, connection, visibility, play, pause, load;
 const savedClips = { ...educationVideos };
-const keys = ["barcelona", "oxford", "fordham-bs", "esade", "fordham-ms"];
-const render = () => act(() => root.render(<EducationJourney />));
-const controls = () => [...container.querySelectorAll('.education-art-control')];
+const keys = ["barcelona", "oxford", "fordham-bs", "esade", "fordham-ms", "pine-crest", "beau-soleil", "id-tech-miami"];
+const render = () => act(() => root.render(<EducationJourney autoCycle={false} />));
+const controls = () => keys.map(key => container.querySelector(`.education-stop--${key} .education-art-control`)).filter(Boolean);
 const video = () => container.querySelector('video');
 const send = (target, type, extras = {}) => act(() => {
   const event = new Event(type, { bubbles: true, cancelable: true });
@@ -62,19 +62,19 @@ afterEach(() => {
   delete global.IS_REACT_ACT_ENVIRONMENT;
 });
 
-test('idle artwork loads no video and retains five responsive stills and distinct accessible controls', () => {
+test('idle artwork loads no video and retains eight responsive stills and distinct accessible controls', () => {
   ready();
   expect(video()).toBeNull();
   expect(play).not.toHaveBeenCalled();
-  expect(container.querySelectorAll('img')).toHaveLength(5);
-  expect(controls()).toHaveLength(5);
-  expect(new Set(controls().map(button => button.getAttribute('aria-label'))).size).toBe(5);
+  expect(container.querySelectorAll('img')).toHaveLength(8);
+  expect(controls()).toHaveLength(8);
+  expect(new Set(controls().map(button => button.getAttribute('aria-label'))).size).toBe(8);
   controls().forEach(button => expect(button.getAttribute('aria-describedby')).toBe('education-animation-hint'));
 });
 
 test('hover plays only that clip muted inline; leaving releases it and reveals the exact same poster', () => {
   ready();
-  const poster = container.querySelector('img');
+  const poster = container.querySelector('.education-stop--barcelona img');
   const firstControl = controls()[0];
   hover(0);
   const first = video();
@@ -93,7 +93,7 @@ test('hover plays only that clip muted inline; leaving releases it and reveals t
   expect(pause).toHaveBeenCalled();
   expect(load).toHaveBeenCalled();
   expect(first.hasAttribute('src')).toBe(false);
-  expect(container.querySelector('img')).toBe(poster);
+  expect(container.querySelector('.education-stop--barcelona img')).toBe(poster);
   hover(0);
   expect(video()).not.toBe(first);
 });
@@ -233,10 +233,10 @@ test('unmount releases media, observers, and preference subscriptions', () => {
 });
 
 
-test('all five production mappings point to distinct nonempty local clips', () => {
-  expect(Object.keys(savedClips)).toEqual(keys);
+test('all production mappings point to distinct nonempty local clips', () => {
+  expect(Object.keys(savedClips).sort()).toEqual([...keys].sort());
   const sources = Object.values(savedClips).map(clip => clip.src);
-  expect(new Set(sources).size).toBe(5);
+  expect(new Set(sources).size).toBe(sources.length);
   sources.forEach(src => {
     expect(src).toMatch(/^\/education\/video\/.+-immersive-5s\.mp4$/);
     expect(fs.statSync(path.join(__dirname, '../../public', src)).size).toBeGreaterThan(100000);
@@ -252,4 +252,239 @@ test('offscreen artwork remains keyboard reachable and waits for visibility befo
   expect(video()).toBeNull();
   intersect();
   expect(video().getAttribute('src')).toBe('/test-only/fordham-ms.mp4');
+});
+
+
+test.each(['pine-crest', 'beau-soleil', 'id-tech-miami'])('new %s entry plays its actual matching clip and preserves the poster', key => {
+  Object.keys(educationVideos).forEach(id => delete educationVideos[id]);
+  Object.assign(educationVideos, savedClips);
+  ready();
+  const button = container.querySelector(`.education-stop--${key} .education-art-control`);
+  const poster = container.querySelector(`.education-stop--${key} img`);
+  expect(video()).toBeNull();
+  send(button, 'pointerover', { pointerType: 'mouse' });
+  expect(video().getAttribute('src')).toBe(`/education/video/${key}-immersive-5s.mp4`);
+  expect(video().getAttribute('poster')).toBe(`/education/${key}-artwork-1280.jpg`);
+  expect(video().preload).toBe('none');
+  leave(button);
+  expect(video()).toBeNull();
+  expect(container.querySelector(`.education-stop--${key} img`)).toBe(poster);
+});
+
+
+test.each(['barcelona', 'oxford', 'fordham-bs', 'esade', 'fordham-ms'])('refreshed %s scene plays its new matching video', key => {
+  Object.keys(educationVideos).forEach(id => delete educationVideos[id]);
+  Object.assign(educationVideos, savedClips);
+  ready();
+  const card = container.querySelector(`.education-stop--${key}`);
+  const button = card.querySelector('.education-art-control');
+  expect(button).not.toBeNull();
+  expect(video()).toBeNull();
+  send(button, 'pointerover', { pointerType: 'mouse' });
+  const fileKey = key === 'barcelona' ? 'asb' : key;
+  expect(video().getAttribute('src')).toBe(`/education/video/${fileKey}-refresh-immersive-5s.mp4`);
+  expect(video().getAttribute('poster')).toBe(`/education/${fileKey}-artwork-1280.jpg`);
+  expect(video().loop).toBe(true);
+  expect(video().muted).toBe(true);
+  leave(button);
+  expect(video()).toBeNull();
+});
+
+const mobileLayout = () => {
+  const compactMedia = { matches: true, addEventListener: jest.fn(), removeEventListener: jest.fn() };
+  window.matchMedia = jest.fn(query => query === '(max-width: 900px)' ? compactMedia : media);
+};
+
+test('mobile cards autoplay muted inline only when the section and individual cards are visible', () => {
+  mobileLayout(); render();
+  expect(video()).toBeNull();
+  intersect(true, '#education');
+  expect(video()).toBeNull();
+  intersect(true, '.education-stop--barcelona .education-stop-art');
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  expect(video().getAttribute('src')).toBe('/test-only/barcelona.mp4');
+  expect(video().autoplay && video().muted && video().playsInline && video().loop).toBe(true);
+  intersect(true, '.education-stop--oxford .education-stop-art');
+  expect(container.querySelectorAll('video')).toHaveLength(2);
+  intersect(false, '.education-stop--barcelona .education-stop-art');
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  expect(video().getAttribute('src')).toBe('/test-only/oxford.mp4');
+  expect(pause).toHaveBeenCalled();
+  intersect(false, '#education');
+  expect(video()).toBeNull();
+});
+
+test('mobile autoplay resumes on reentry and page visibility but respects global pause', () => {
+  mobileLayout(); ready();
+  expect(container.querySelectorAll('video')).toHaveLength(8);
+  intersect(false); expect(video()).toBeNull();
+  intersect(); expect(container.querySelectorAll('video')).toHaveLength(8);
+  act(() => { visibility = 'hidden'; document.dispatchEvent(new Event('visibilitychange')); });
+  expect(video()).toBeNull();
+  act(() => { visibility = 'visible'; document.dispatchEvent(new Event('visibilitychange')); });
+  expect(container.querySelectorAll('video')).toHaveLength(8);
+  const toggle = container.querySelector('.education-motion-control');
+  click(toggle); expect(video()).toBeNull();
+  click(toggle); expect(container.querySelectorAll('video')).toHaveLength(8);
+});
+
+test('mobile tap pauses a card until explicitly resumed, without stopping other cards', () => {
+  mobileLayout(); ready();
+  const button = controls()[0];
+  click(button);
+  expect(container.querySelectorAll('video')).toHaveLength(7);
+  expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
+  intersect(false); intersect();
+  expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
+  click(button);
+  expect(container.querySelector('.education-stop--barcelona video')).not.toBeNull();
+  send(button, 'keydown', { key: 'Escape' });
+  expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
+});
+
+test('mobile autoplay never overrides reduced motion or save data', () => {
+  mobileLayout(); media.matches = true; ready();
+  expect(video()).toBeNull(); expect(play).not.toHaveBeenCalled();
+  preference(false); expect(container.querySelectorAll('video')).toHaveLength(8);
+  saveData(true); expect(video()).toBeNull();
+  saveData(false); expect(container.querySelectorAll('video')).toHaveLength(8);
+  preference(true); expect(video()).toBeNull();
+});
+
+test('rejected mobile autoplay stays on the poster and waits for a manual retry', async () => {
+  mobileLayout(); play.mockRejectedValue(new Error('NotAllowedError'));
+  await act(async () => { root.render(<EducationJourney autoCycle={false} />); });
+  await act(async () => { intersect(); });
+  expect(video()).toBeNull();
+  const calls = play.mock.calls.length;
+  intersect(false); intersect();
+  expect(play).toHaveBeenCalledTimes(calls);
+  play.mockResolvedValue();
+  await act(async () => { controls()[0].click(); });
+  expect(container.querySelector('.education-stop--barcelona video')).not.toBeNull();
+});
+
+// Production desktop tour coverage; interaction-only tests above retain the
+// underlying media controls independently of the tour coordinator.
+const tour = () => { act(() => root.render(<EducationJourney />)); intersect(); };
+const activeSchool = () => container.querySelector('.education-stop[data-active="true"]');
+test('desktop tour opens Pine Crest without a click and advances after five seconds playing', () => {
+  jest.useFakeTimers(); tour();
+  expect(activeSchool().className).toContain('pine-crest');
+  expect(video().getAttribute('src')).toBe('/test-only/pine-crest.mp4');
+  send(video(), 'playing');
+  act(() => jest.advanceTimersByTime(4999));
+  expect(activeSchool().className).toContain('pine-crest');
+  act(() => jest.advanceTimersByTime(1));
+  expect(activeSchool().className).toContain('beau-soleil');
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  send(video(), 'playing'); act(() => jest.advanceTimersByTime(5000));
+  expect(activeSchool().className).toContain('id-tech-miami');
+  act(() => root.render(null)); expect(jest.getTimerCount()).toBe(0); jest.useRealTimers();
+});
+test('desktop hover holds selected school, leaving resumes and global pause freezes the tour', () => {
+  jest.useFakeTimers(); tour(); hover(1);
+  send(video(), 'playing'); act(() => jest.advanceTimersByTime(20000));
+  expect(activeSchool().className).toContain('oxford');
+  leave(controls()[1]); act(() => jest.advanceTimersByTime(5000));
+  expect(activeSchool().className).toContain('fordham-bs');
+  click(container.querySelector('.education-motion-control'));
+  act(() => jest.advanceTimersByTime(20000));
+  expect(video()).toBeNull(); expect(activeSchool().className).toContain('fordham-bs');
+  click(container.querySelector('.education-motion-control'));
+  expect(video()).not.toBeNull();
+  act(() => root.render(null)); jest.useRealTimers();
+});
+test('desktop tour pauses offscreen and on hidden tabs and wraps across all schools', () => {
+  jest.useFakeTimers(); tour(); send(video(), 'playing');
+  intersect(false); act(() => jest.advanceTimersByTime(20000));
+  expect(video()).toBeNull(); expect(activeSchool().className).toContain('pine-crest');
+  intersect();
+  for (let i = 0; i < 8; i++) { send(video(), 'playing'); act(() => jest.advanceTimersByTime(5000)); }
+  expect(activeSchool().className).toContain('pine-crest');
+  act(() => { visibility = 'hidden'; document.dispatchEvent(new Event('visibilitychange')); });
+  act(() => jest.advanceTimersByTime(20000)); expect(video()).toBeNull();
+  act(() => root.render(null)); jest.useRealTimers();
+});
+test('desktop tour handles stalled media without getting stuck and Escape stops', () => {
+  jest.useFakeTimers(); tour();
+  act(() => jest.advanceTimersByTime(10000));
+  expect(activeSchool().className).toContain('beau-soleil');
+  const button = activeSchool().querySelector('button');
+  send(button, 'keydown', { key: 'Escape' });
+  act(() => jest.advanceTimersByTime(20000)); expect(video()).toBeNull();
+  expect(container.querySelector('.education-motion-control').getAttribute('aria-pressed')).toBe('true');
+  act(() => root.render(null)); jest.useRealTimers();
+});
+test('tour respects reduced-motion and sequences one mobile card at a time', () => {
+  media.matches = true; tour(); expect(video()).toBeNull();
+  expect(container.querySelector('[data-auto-cycle="true"]')).toBeNull();
+  act(() => root.render(null)); media.matches = false; mobileLayout(); tour();
+  expect(container.querySelector('[data-auto-cycle="true"]')).not.toBeNull();
+  expect(container.querySelector('[data-carousel="true"]')).not.toBeNull();
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+});
+
+test('mobile carousel starts with Pine Crest, advances every five seconds and centers without page scrolling', () => {
+  jest.useFakeTimers(); mobileLayout(); tour();
+  const rail = container.querySelector('[data-carousel="true"]');
+  expect(activeSchool().className).toContain('pine-crest');
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  send(video(), 'playing'); act(() => jest.advanceTimersByTime(5000));
+  expect(activeSchool().className).toContain('beau-soleil');
+  expect(rail).not.toBeNull();
+  intersect(false); act(() => jest.advanceTimersByTime(20000));
+  expect(video()).toBeNull();
+  expect(activeSchool().className).toContain('beau-soleil');
+  act(() => root.render(null)); jest.useRealTimers();
+});
+test('mobile swipe holds playback sequencing and selects nearest school after scroll settles', () => {
+  jest.useFakeTimers(); mobileLayout(); tour();
+  const rail = container.querySelector('[data-carousel="true"]');
+  Object.defineProperty(rail, 'clientWidth', { value: 400 });
+  Object.defineProperty(rail, 'scrollWidth', { value: 2000 });
+  [...rail.children].forEach((card, index) => {
+    Object.defineProperty(card, 'offsetLeft', { value: index * 200 });
+    Object.defineProperty(card, 'offsetWidth', { value: 180 });
+  });
+  send(rail, 'pointerdown', { pointerType: 'touch', clientX: 200 });
+  send(rail, 'pointermove', { pointerType: 'touch', clientX: 100 });
+  rail.scrollLeft = 500;
+  send(rail, 'scroll'); send(rail, 'pointerup', { pointerType: 'touch', clientX: 100 });
+  act(() => jest.advanceTimersByTime(180));
+  expect(activeSchool().className).toContain('barcelona');
+  expect(container.querySelectorAll('video')).toHaveLength(1);
+  act(() => root.render(null)); jest.useRealTimers();
+});
+test('mobile arrow navigation selects the next card and preserves explicit pause', () => {
+  mobileLayout(); tour();
+  const rail = container.querySelector('[data-carousel="true"]');
+  send(rail, 'keydown', { key: 'ArrowRight' });
+  expect(activeSchool().className).toContain('beau-soleil');
+  click(activeSchool().querySelector('button'));
+  expect(video()).toBeNull();
+  expect(container.querySelector('.education-motion-control').getAttribute('aria-pressed')).toBe('true');
+});
+
+test('mobile swipe expands the selected card immediately without waiting for scroll debounce', () => {
+  jest.useFakeTimers(); mobileLayout(); tour();
+  const rail = container.querySelector('[data-carousel="true"]');
+  Object.defineProperty(rail, 'clientWidth', { value: 400 });
+  Object.defineProperty(rail, 'scrollWidth', { value: 2000 });
+  [...rail.children].forEach((card, index) => {
+    Object.defineProperty(card, 'offsetLeft', { value: index * 200 });
+    Object.defineProperty(card, 'offsetWidth', { value: 180 });
+  });
+  send(rail, 'pointerdown', { pointerType: 'touch', clientX: 250 });
+  send(rail, 'pointermove', { pointerType: 'touch', clientX: 150 });
+  rail.scrollLeft = 500; send(rail, 'scroll');
+  // No timer advancement: expansion follows the swipe in the same update.
+  expect(activeSchool().className).toContain('barcelona');
+  send(rail, 'pointerup', { pointerType: 'touch', clientX: 150 });
+  expect(activeSchool().className).toContain('barcelona');
+  send(video(), 'playing'); act(() => jest.advanceTimersByTime(4999));
+  expect(activeSchool().className).toContain('barcelona');
+  act(() => jest.advanceTimersByTime(1));
+  expect(activeSchool().className).toContain('oxford');
+  act(() => root.render(null)); jest.useRealTimers();
 });

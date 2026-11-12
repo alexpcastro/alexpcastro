@@ -58,24 +58,55 @@ test('the finale keeps the invitation, verified contact destinations and section
   expect(section().querySelector('.portfolio-download').textContent).toBe('');
 });
 
-test('the orbital motif is decorative and never contains interactive targets', () => {
+test('the new ribbon sculpture is decorative, with a separate integrated accessible motion control', () => {
   render();
-  const orbit = section().querySelector('.contact-orbit');
-  expect(orbit.getAttribute('aria-hidden')).toBe('true');
-  expect(orbit.querySelector('a, button, [tabindex]')).toBeNull();
-  expect(orbit.querySelector('svg').getAttribute('focusable')).toBe('false');
+  const art = section().querySelector('.contact-sculpture');
+  expect(art.getAttribute('aria-hidden')).toBe('true');
+  expect(art.getAttribute('focusable')).toBe('false');
+  expect(art.querySelector('a, button, [tabindex]')).toBeNull();
+  expect(art.querySelectorAll('.contact-ribbon-light')).toHaveLength(3);
+  expect(section().querySelector('.contact-orbit-flower, .contact-petal')).toBeNull();
+  const control = section().querySelector('.contact-art-control');
+  expect(control.getAttribute('aria-label')).toBe('Pause contact animation');
+  expect(control.closest('[aria-hidden="true"]')).toBeNull();
+  expect(control.parentElement.className).toBe('contact-art');
 });
 
-test('the open finale has no eyebrow or motion controls and keeps all contact targets', () => {
+test('the open finale keeps its clean heading and uses continuous closed-path animation, not a time limit', () => {
   render();
-  expect(section().querySelector('.contact-heading-row, .contact-eyebrow, button')).toBeNull();
+  expect(section().querySelector('.contact-heading-row, .contact-eyebrow')).toBeNull();
   expect(section().textContent).not.toMatch(/Get in touch|Pause|Resume/);
   expect(section().querySelectorAll('a')).toHaveLength(4);
   const css = fs.readFileSync(path.join(__dirname, 'ContactFinale.css'), 'utf8');
   expect(css).toMatch(/\.contact-stage \{[^}]*border: 0;[^}]*border-radius: 0;[^}]*background: transparent;[^}]*box-shadow: none;/);
-  expect(css).not.toContain('infinite');
-  expect(css.match(/animation: contact-[^;]+/g)).toHaveLength(3);
-  expect(css.match(/animation: contact-[^;]+/g).every(rule => rule.includes('4s ease-out both'))).toBe(true);
+  expect(css.match(/animation: contact-[^;]+/g)).toHaveLength(2);
+  expect(css.match(/animation: contact-[^;]+/g).every(rule => rule.includes('linear infinite'))).toBe(true);
+  expect(css).toContain('rotate(-18deg)');
+  expect(css).toContain('rotate(342deg)');
+  expect(css).toContain('calc(var(--phase) - 100px)');
+  section().querySelectorAll('.contact-ribbon-light').forEach(light => {
+    expect(light.getAttribute('pathLength')).toBe('100');
+    expect(light.getAttribute('stroke-dasharray')).toBe('13 87');
+  });
+});
+
+test('repeated pause/resume and preference changes preserve a deliberate pause without remounting the art', () => {
+  render();
+  const art = section().querySelector('.contact-sculpture');
+  const control = () => section().querySelector('.contact-art-control');
+  for (let index = 0; index < 4; index++) {
+    act(() => control().click());
+    expect(section().dataset.motion).toBe(index % 2 === 0 ? 'paused' : 'running');
+    expect(control().getAttribute('aria-pressed')).toBe(String(index % 2 === 0));
+    expect(control().getAttribute('aria-label')).toBe(index % 2 === 0 ? 'Resume contact animation' : 'Pause contact animation');
+    expect(section().querySelector('.contact-sculpture')).toBe(art);
+  }
+  act(() => control().click());
+  preferenceChanged(true);
+  expect(control()).toBeNull();
+  preferenceChanged(false);
+  expect(section().dataset.motion).toBe('paused');
+  expect(control().getAttribute('aria-pressed')).toBe('true');
 });
 
 test('live reduced-motion preferences keep a static, readable finale without replacing links', () => {
@@ -105,7 +136,7 @@ test('data saving disables automatic animation and responds to connection change
   expect(connection.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
 });
 
-test('offscreen and background suspend the one-time motion, and unmount cleans subscriptions', () => {
+test('offscreen and background suspend the continuous motion, and unmount cleans subscriptions', () => {
   let notify;
   const observe = jest.fn(), disconnect = jest.fn();
   global.IntersectionObserver = jest.fn(callback => { notify = callback; return { observe, disconnect }; });
