@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 
 // Only the open chapter mounts this component. The still stays underneath
 // until actual playback, and is the fallback for blocked/failed media.
-export default function CareerVideo({ id, src, poster, paused = false }) {
+export default function CareerVideo({ id, src, poster, paused = false, loop = true, onPlaybackStart, onPlaybackEnd }) {
   const layer = useRef(null);
   const player = useRef(null);
   const [inView, setInView] = useState(() => typeof IntersectionObserver === "undefined");
@@ -40,9 +40,10 @@ export default function CareerVideo({ id, src, poster, paused = false }) {
 
   return <span ref={layer} className="career-video-layer" aria-hidden="true">
     {mounted && <video ref={player} id={id} className={`career-video${playing ? " is-playing" : ""}`}
-      src={src} poster={poster} muted playsInline loop preload="none"
+      src={src} poster={poster} muted playsInline loop={loop} preload="none"
       tabIndex={-1} aria-hidden="true" disablePictureInPicture
-      onPlaying={() => { if (paused) player.current?.pause(); else setPlaying(true); }}
+      onPlaying={() => { if (paused) player.current?.pause(); else { setPlaying(true); onPlaybackStart?.(); } }}
+      onEnded={onPlaybackEnd}
       onError={() => { setPlaying(false); setFailed(true); }} />}
   </span>;
 }

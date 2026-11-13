@@ -131,7 +131,7 @@ test("all six experiences use distinct local career illustrations with accessibl
   expect(container.querySelectorAll(".experience-card video")).toHaveLength(1);
   expect(video.getAttribute("src")).toBe("/artwork/video/deloitte-immersive-5s.mp4");
   expect(video.getAttribute("poster")).toBe("/artwork/deloitte-neon-1280.jpg");
-  expect(video.loop).toBe(true);
+  expect(video.loop).toBe(false);
   expect(fs.existsSync(path.join(process.cwd(), "public", video.getAttribute("src")))).toBe(true);
 });
 
@@ -418,7 +418,7 @@ test("each open experience plays only its own local immersive video", () => {
     expect(video.closest(".experience-card").classList.contains("is-active")).toBe(true);
     expect(video.getAttribute("src")).toBe(`/artwork/video/${kind}-immersive-5s.mp4`);
     expect(video.getAttribute("poster")).toBe(`/artwork/${kind}-neon-1280.jpg`);
-    expect(video.loop).toBe(true);
+    expect(video.loop).toBe(false);
     expect(video.muted).toBe(true);
     expect(video.playsInline).toBe(true);
     expect(fs.existsSync(path.join(process.cwd(), "public", video.getAttribute("src")))).toBe(true);

@@ -46,15 +46,10 @@ export default function FloatingSkills() {
     };
   }, []);
 
-  return <section id="skills" ref={sectionRef} className="portfolio-skills" tabIndex="-1" aria-labelledby="skills-heading" data-motion={running ? "running" : "paused"}>
+  return <section id="skills" ref={sectionRef} className="portfolio-skills" tabIndex="-1" aria-labelledby="skills-heading" onKeyDown={event => { if (event.key === "Escape") setPaused(value => !value); }} data-motion={running ? "running" : "paused"}>
     <div className="skills-heading-row">
       <h2 id="skills-heading">Skills &amp; toolkit</h2>
       {allowMotion && <div className="skills-controls">
-        {!readable && <button type="button" className="skills-motion-control" aria-pressed={paused} aria-label={paused ? "Resume skill motion" : "Pause skill motion"} onClick={() => setPaused(value => !value)}>
-          <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
-            {paused ? <path d="M5 3 12 8 5 13Z" /> : <path d="M4 3h3v10H4zM10 3h3v10h-3z" />}
-          </svg><span>{paused ? "Resume" : "Pause"}</span>
-        </button>}
         <button type="button" className="skills-view-control" aria-controls="skills-catalog" aria-pressed={viewAll} onClick={() => changeView(() => setViewAll(value => !value))}>
           {readable ? "Show floating skills" : "View all skills"}<span aria-hidden="true">{readable ? " ↗" : " +"}</span>
         </button>

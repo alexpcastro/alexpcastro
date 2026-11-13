@@ -71,17 +71,15 @@ test('pause and resume support repeated toggles and preserve the field DOM', () 
   render();
   const originalField = field();
   for (let index = 0; index < 4; index++) {
-    act(() => control().click());
+    act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
     expect(section().dataset.motion).toBe(index % 2 === 0 ? 'paused' : 'running');
-    expect(control().getAttribute('aria-pressed')).toBe(String(index % 2 === 0));
-    expect(control().getAttribute('aria-label')).toBe(index % 2 === 0 ? 'Resume skill motion' : 'Pause skill motion');
     expect(field()).toBe(originalField);
   }
 });
 
 test('view all shows every skill, restores floating mode, and remembers a deliberate pause', () => {
   render();
-  act(() => control().click());
+  act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   act(() => view().click());
   expect(field()).toBeNull();
   expect(control()).toBeNull();
@@ -92,7 +90,7 @@ test('view all shows every skill, restores floating mode, and remembers a delibe
   act(() => view().click());
   expect(field()).not.toBeNull();
   expect(section().dataset.motion).toBe('paused');
-  act(() => control().click());
+  act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   expect(section().dataset.motion).toBe('running');
 });
 
@@ -192,11 +190,11 @@ test('Pause freezes a displaced pose, Resume recovers, and View all cancels pend
   const river = interactiveRiver();
   river.point(); river.frames(12);
   const displaced = river.displacement();
-  act(() => control().click());
+  act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   expect(river.callbacks.size).toBe(0);
   river.frames(10);
   expect(river.displacement()).toBe(displaced);
-  act(() => control().click());
+  act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   river.frames(240);
   expect(river.displacement()).toBe(0);
   expect(river.callbacks.size).toBe(0);
@@ -261,4 +259,10 @@ test('the compact chip catalog keeps category styling, full names, and the origi
   expect(field().querySelectorAll('.skills-track')).toHaveLength(4);
   expect(field().querySelectorAll('.skill-chip')).toHaveLength(106);
   expect(field().innerHTML).toBe(originalRiver);
+});
+
+
+test('no pause button is rendered', () => {
+  render();
+  expect(control()).toBeNull();
 });

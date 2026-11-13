@@ -126,8 +126,8 @@ test('compact layouts and touch/coarse input remain untilted while tap playback 
 });
 
 test('pause, reduced motion, save-data and hidden pages cancel transforms and scheduled work', () => {
-  ready(); move(); advance(2); act(() => container.querySelector('.education-motion-control').click()); expectReset();
-  act(() => container.querySelector('.education-motion-control').click()); move(); advance(2);
+  ready(); move(); advance(2); send(container.querySelector('#education'), 'keydown', { key: 'Escape' }); expectReset();
+  send(container.querySelector('#education'), 'keydown', { key: 'Escape' }); move(); advance(2);
   updateMedia(REDUCED, true); expectReset(); move(); expectReset(); updateMedia(REDUCED, false);
   move(); advance(2); act(() => { connection.saveData = true; connection.listeners.forEach(listener => listener()); }); expectReset();
   act(() => { connection.saveData = false; connection.listeners.forEach(listener => listener()); }); move(); advance(2);

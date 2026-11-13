@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import OrganicFrame from "./OrganicFrame";
 
 const frames = { "pine-crest": "apc", "beau-soleil": "columbia", "id-tech-miami": "deloitte", barcelona: "brokr", oxford: "columbia", "fordham-bs": "fordham", esade: "deloitte", "fordham-ms": "pure-digital" };
-const asset = name => `${process.env.PUBLIC_URL || ""}/education/${name}`;
+const asset = name => `${process.env.PUBLIC_URL || ""}/education/${name}?v=20261112-immersive`;
 
 // Keep the responsive still underneath. Mobile cards autoplay only while
 // visible; desktop cards remain interaction-driven. Offscreen media is released.
@@ -71,7 +71,7 @@ export default function EducationArtwork({ school, clip, allowMotion, enabled, p
         {school.institution && <p className="education-stop-institution">{school.institution}</p>}
       </div>
       {available && <button type="button" className="education-art-control" disabled={paused}
-        aria-label={`${mounted ? "Pause" : "Play"} animation: ${label}`} aria-pressed={Boolean(mounted)} aria-describedby="education-animation-hint"
+        aria-label={`Explore ${label}`} aria-pressed={Boolean(mounted)} aria-describedby="education-animation-hint"
         onPointerEnter={event => { if (!autoPlay && event.pointerType !== "touch") { hovered.current = true; activate(); } }}
         onPointerLeave={event => { if (!autoPlay && event.pointerType !== "touch") { hovered.current = false; if (!keyboardFocus.current) deactivate(); } }}
         onPointerDown={() => { pointerFocus.current = true; keyboardFocus.current = false; }}
@@ -82,7 +82,7 @@ export default function EducationArtwork({ school, clip, allowMotion, enabled, p
           keyboardFocus.current = true;
           if (event.key === "Escape") { event.preventDefault(); stopPreview(); }
         }}
-        onClick={() => { if (mounted) stopPreview(); else startPreview(); }} />}
+        onClick={startPreview} />}
     </div>
     </div>
   </div>;

@@ -5,7 +5,7 @@ import CareerVideo from "./CareerVideo";
 import "./CareerScene.css";
 
 // Keep the exact still visible until a real, generated video is playing.
-export default function CareerScene({ kind = "deloitte", className = "", active = false, allowMotion = false, motionPaused = false }) {
+export default function CareerScene({ kind = "deloitte", className = "", active = false, allowMotion = false, motionPaused = false, loop = true, onPlaybackStart, onPlaybackEnd }) {
   const item = careerScenes[kind];
   if (!item) return null;
   const first = kind === "deloitte";
@@ -17,6 +17,6 @@ export default function CareerScene({ kind = "deloitte", className = "", active 
   const clip = careerVideos[kind];
   if (!clip) return still;
   return <span className="career-media">{still}
-    {active && allowMotion && <CareerVideo key={clip.src} id={`video-${kind}`} src={clip.src} poster={item.src} paused={motionPaused} />}
+    {active && allowMotion && <CareerVideo key={clip.src} id={`video-${kind}`} src={clip.src} poster={item.src} paused={motionPaused} loop={loop} onPlaybackStart={onPlaybackStart} onPlaybackEnd={onPlaybackEnd} />}
   </span>;
 }

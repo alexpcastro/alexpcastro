@@ -59,19 +59,19 @@ test('education images are generated, local, lazy and truthfully described witho
     expect(image.getAttribute('loading')).toBe('lazy');
     expect(image.width).toBeGreaterThan(0);
     expect(image.height).toBeGreaterThan(0);
-    expect(fs.existsSync(path.join(__dirname, '../../public', image.getAttribute('src')))).toBe(true);
+    expect(fs.existsSync(path.join(__dirname, '../../public', image.getAttribute('src').split('?')[0]))).toBe(true);
   });
   expect(section().querySelector('.education-city-mark, .education-monogram')).toBeNull();
   const asb = section().querySelector('.education-stop--barcelona img');
-  expect(asb.getAttribute('src')).toBe('/education/asb-artwork-640.jpg');
+  expect(asb.getAttribute('src')).toBe('/education/asb-artwork-640.jpg?v=20261112-immersive');
   expect(asb.alt).toContain('AI-generated illustration');
   expect(asb.alt).toContain('high-school students');
   expect(section().querySelectorAll('img[srcset]')).toHaveLength(8);
-  expect(new Set([...section().querySelectorAll('img')].map(image => image.getAttribute('src'))).size).toBe(8);
+  expect(new Set([...section().querySelectorAll('img')].map(image => image.getAttribute('src').split('?')[0])).size).toBe(8);
   section().querySelectorAll('img[srcset]').forEach(image => {
     expect(image.getAttribute('sizes')).toContain('(max-width: 900px)');
     image.getAttribute('srcset').split(', ').forEach(candidate => {
-      expect(fs.existsSync(path.join(__dirname, '../../public', candidate.split(' ')[0]))).toBe(true);
+      expect(fs.existsSync(path.join(__dirname, '../../public', candidate.split(' ')[0].split('?')[0]))).toBe(true);
     });
     expect(image.alt).toMatch(/^AI-generated/);
   });
@@ -82,7 +82,7 @@ test('education images are generated, local, lazy and truthfully described witho
   expect(credits).toContain('https://creativecommons.org/licenses/by/4.0/');
   expect(section().querySelector('.education-photo-credits, a[href*="ATTRIBUTION"]')).toBeNull();
   expect(section().textContent).not.toMatch(/Image credits|CC BY|Wikimedia|ICGC/i);
-  section().querySelectorAll('img').forEach(image => expect(image.getAttribute('src')).toMatch(/-artwork-640\.jpg$/));
+  section().querySelectorAll('img').forEach(image => expect(image.getAttribute('src').split('?')[0]).toMatch(/-artwork-640\.jpg$/));
   expect(section().querySelector('.education-timeline-rail')).toBeNull();
 });
 
@@ -90,10 +90,8 @@ test('pause/resume is repeatable without hiding facts or replacing imagery', () 
   render();
   const firstImage = section().querySelector('img');
   for (let index = 0; index < 4; index++) {
-    act(() => control().click());
+    act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
     expect(section().dataset.motion).toBe(index % 2 === 0 ? 'paused' : 'running');
-    expect(control().getAttribute('aria-pressed')).toBe(String(index % 2 === 0));
-    expect(control().getAttribute('aria-label')).toBe(index % 2 === 0 ? 'Resume education motion' : 'Pause education motion');
     expect(section().querySelector('img')).toBe(firstImage);
     expect(section().querySelectorAll('article')).toHaveLength(8);
   }
@@ -106,12 +104,11 @@ test('reduced motion and preference changes preserve a static readable layout an
   expect(control()).toBeNull();
   expect(section().querySelectorAll('article')).toHaveLength(8);
   act(() => { media.matches = false; media.addEventListener.mock.calls.find(([type]) => type === 'change')[1](); });
-  act(() => control().click());
+  act(() => section().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   act(() => { media.matches = true; media.addEventListener.mock.calls.find(([type]) => type === 'change')[1](); });
   expect(control()).toBeNull();
   act(() => { media.matches = false; media.addEventListener.mock.calls.find(([type]) => type === 'change')[1](); });
   expect(section().dataset.motion).toBe('paused');
-  expect(control().getAttribute('aria-pressed')).toBe('true');
 });
 
 test('data saving disables all automatic motion', () => {
@@ -215,4 +212,18 @@ test('mobile Education rail bleeds to shell edges like the skills river without 
   expect(css).toMatch(/\.education-card-grid\[data-carousel="true"\] \{[^}]*width: 100cqw;[^}]*max-width: 100cqw;[^}]*margin-left: calc\(50% - 50cqw\)/);
   expect(css).toContain('overflow-x: auto');
   expect(css.split('@media print')[1]).toContain('margin-left: 0;');
+});
+
+
+test('active education artwork has a normal cursor; inactive selection stays clickable', () => {
+  const css = fs.readFileSync(path.join(__dirname, 'EducationJourney.css'), 'utf8');
+  expect(css).toContain('.education-stop[data-active="true"] .education-art-control,');
+  expect(css).toMatch(/\.education-art-control\[aria-pressed="true"\]\s*\{ cursor: default;/);
+  expect(css).toMatch(/(?:^|\n)\.education-art-control\s*\{[^}]*cursor: pointer/);
+});
+
+
+test('no pause button is rendered', () => {
+  render();
+  expect(control()).toBeNull();
 });

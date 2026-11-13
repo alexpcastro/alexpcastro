@@ -9,10 +9,13 @@ import "./ExperienceGallery.css";
 
 const labels = { deloitte: "Deloitte", fordham: "Fordham", columbia: "Columbia", brokr: "BROKR", "pure-digital": "Pure Digital", apc: "APC" };
 
-export default function ExperienceGallery() {
+export default function ExperienceGallery({ autoCycle = true }) {
   const [selected, setSelected] = useState(0);
   const [motionPaused, setMotionPaused] = useState(false);
   const allowMotion = useMotionPreference();
+  const [hovered, setHovered] = useState(null);
+  const [focusHeld, setFocusHeld] = useState(false);
+  const [playingIndex, setPlayingIndex] = useState(null);
   const [inView, setInView] = useState(() => typeof IntersectionObserver === "undefined");
   const [pageVisible, setPageVisible] = useState(() => document.visibilityState !== "hidden");
   const running = allowMotion && !motionPaused && inView && pageVisible;
@@ -49,10 +52,29 @@ export default function ExperienceGallery() {
     clearHover();
     if (index === selected) return;
     prepareMobileSwap();
+    setPlayingIndex(null);
     setSelected(index);
   };
+  const advanceRef = useRef(null);
+  const cycling = autoCycle && running && hovered === null && !focusHeld;
+  advanceRef.current = () => {
+    if (!cycling) return;
+    prepareMobileSwap();
+    setPlayingIndex(null);
+    setSelected(index => (index + 1) % career.length);
+  };
+  // Match Education: five seconds after playback starts, with a bounded
+  // fallback for unavailable media. Never advance under pointer/keyboard use.
+  useEffect(() => {
+    if (!cycling) return undefined;
+    const timer = window.setTimeout(() => advanceRef.current?.(), playingIndex === selected ? 5000 : 10000);
+    return () => window.clearTimeout(timer);
+  }, [cycling, playingIndex, selected]);
+  useEffect(() => { if (!running) setPlayingIndex(null); }, [running]);
   const handleKey = (event, index) => {
     keyboardMode.current = true;
+    setFocusHeld(true);
+    if (event.key === "Escape") { setMotionPaused(value => !value); return; }
     const destinations = { ArrowRight: (index + 1) % career.length, ArrowLeft: (index - 1 + career.length) % career.length, Home: 0, End: career.length - 1,
       ...(isMobile ? { ArrowDown: (index + 1) % career.length, ArrowUp: (index - 1 + career.length) % career.length } : {}) };
     if (!(event.key in destinations)) return;
@@ -71,9 +93,9 @@ export default function ExperienceGallery() {
     hoverTimer.current = window.setTimeout(() => setSelected(index), 120);
   };
 
-  return <div className="experience-gallery" ref={galleryRef} data-motion={running ? "running" : "paused"} onPointerDown={() => { keyboardMode.current = false; }} onKeyDown={() => { keyboardMode.current = true; tilt.reset(); }}>
+  return <div onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) setFocusHeld(false); }} className="experience-gallery" ref={galleryRef} data-motion={running ? "running" : "paused"} onPointerDown={() => { keyboardMode.current = false; }} onKeyDown={() => { keyboardMode.current = true; tilt.reset(); }}>
     <div className="experience-heading-row"><h2 id="work-heading">Experience</h2></div>
-    <p id="gallery-help" className="visually-hidden">Select an image to open its chapter. Use arrow keys to move between images. Home selects the first and End selects the last.{allowMotion && " Activate the open artwork to pause or resume animation."}</p>
+    <p id="gallery-help" className="visually-hidden">Each chapter plays for five seconds before the next. Hover or focus to hold the tour. Select an image to open its chapter. Use arrow keys to move between images. Home selects the first and End selects the last.{allowMotion && " Press Escape to pause or resume animation."}</p>
     <div className="gallery-track" ref={trackRef} onPointerLeave={clearHover}>
       {career.map((item, index) => {
         const active = selected === index;
@@ -84,28 +106,25 @@ export default function ExperienceGallery() {
           : item.company.startsWith(`${item.linkLabel}, `) ? item.company.slice(item.linkLabel.length + 2) : item.company;
         const pictureProps = {
           type: "button", id: `image-${item.id}`, "aria-expanded": active, "aria-controls": `story-${item.id}`,
-          "aria-label": `${labels[item.id]}: ${active ? `current chapter${allowMotion ? `. ${motionPaused ? "Resume" : "Pause"} animation` : ""}` : "open chapter"}`,
-          "aria-pressed": active && allowMotion ? motionPaused : undefined,
-          title: active && allowMotion ? `${motionPaused ? "Resume" : "Pause"} animation` : undefined,
+          "aria-label": `${labels[item.id]}: ${active ? "current chapter" : "open chapter"}`,
           "aria-describedby": "gallery-help", tabIndex: active ? 0 : -1,
           ref: node => { imageRefs.current[index] = node; },
-          onFocus: event => { keyboardMode.current = event.currentTarget.matches(":focus-visible"); },
+          onFocus: event => { keyboardMode.current = event.currentTarget.matches(":focus-visible"); setFocusHeld(keyboardMode.current); },
           onClick: () => {
             clearHover();
-            if (active && allowMotion) setMotionPaused(value => !value);
-            else select(index);
+            select(index);
           },
           onKeyDown: event => handleKey(event, index),
         };
         return <article key={item.id} id={`experience-${item.id}`} ref={node => { cardRefs.current[index] = node; }}
           className={`portfolio-entry experience-card${active ? " is-active" : ""}${leaving ? " is-departing" : ""}`}
           aria-labelledby={`image-${item.id}`}
-          onPointerEnter={event => { preview(event, index); tilt.move(event, index); }}
+          onPointerEnter={event => { if (event.pointerType === "mouse") setHovered(index); preview(event, index); tilt.move(event, index); }}
           onPointerMove={event => tilt.move(event, index)}
-          onPointerLeave={() => { clearHover(); tilt.leave(index); }} onPointerCancel={() => tilt.leave(index)}>
+          onPointerLeave={() => { setHovered(null); clearHover(); tilt.leave(index); }} onPointerCancel={() => { setHovered(null); tilt.leave(index); }}>
           <div className="experience-card-surface">
           <button className="gallery-picture" {...pictureProps}>
-            <div className="gallery-art-window"><div className={`portfolio-art portfolio-art--${item.id}`}><OrganicFrame kind={item.id} /><CareerScene kind={item.id} active={active || leaving} allowMotion={allowMotion} motionPaused={motionPaused || !active} /></div></div>
+            <div className="gallery-art-window"><div className={`portfolio-art portfolio-art--${item.id}`}><OrganicFrame kind={item.id} /><CareerScene kind={item.id} active={active || leaving} allowMotion={allowMotion} motionPaused={!running || !active} loop={!cycling} onPlaybackStart={() => { if (active) setPlayingIndex(index); }} onPlaybackEnd={() => { if (active) advanceRef.current?.(); }} /></div></div>
             <span className="gallery-picture-caption" aria-hidden="true"><span>{String(index + 1).padStart(2, "0")}</span>{labels[item.id]}</span>
           </button>
           <div id={`story-${item.id}`} className="portfolio-story experience-story" hidden={!active} aria-hidden={!active} inert={!active}>

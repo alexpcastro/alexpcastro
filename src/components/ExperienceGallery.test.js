@@ -3,12 +3,12 @@ import { createRoot } from "react-dom/client";
 import ExperienceGallery from "./ExperienceGallery";
 
 // Verify gallery motion independently of decoding the review video.
-jest.mock('./CareerScene', () => props => <div className="test-scene" data-active={props.active} data-paused={props.motionPaused} data-allowed={props.allowMotion} />);
+jest.mock('./CareerScene', () => props => <div className="test-scene" data-active={props.active} data-paused={props.motionPaused} data-allowed={props.allowMotion} onAnimationStart={props.onPlaybackStart} onAnimationEnd={props.onPlaybackEnd} />);
 let container, root, originalMatchMedia, originalObserver, originalConnection, media, visibility;
 const render = () => act(() => root.render(<ExperienceGallery />));
 const gallery = () => container.querySelector('.experience-gallery');
 const active = () => container.querySelector('.experience-card.is-active');
-const control = () => active().querySelector('.gallery-picture[aria-pressed]');
+const control = () => active().querySelector('.gallery-picture');
 const select = index => act(() => container.querySelectorAll('.gallery-picture')[index].click());
 
 beforeEach(() => {
@@ -40,19 +40,19 @@ afterEach(() => {
 test('every chapter can pause decorative motion and preserves pause across selection', () => {
   render();
   expect(gallery().dataset.motion).toBe('running');
-  act(() => control().click());
+  act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   expect(gallery().dataset.motion).toBe('paused');
   for (const index of [1, 3, 5, 0]) {
     select(index);
-    expect(control().getAttribute('aria-label')).toContain('Resume animation');
-    expect(control().getAttribute('aria-pressed')).toBe('true');
+    expect(control().getAttribute('aria-label')).toContain('current chapter');
+    expect(control().getAttribute('aria-pressed')).toBeNull();
     expect(active().querySelector('.test-scene').dataset.paused).toBe('true');
     expect(gallery().dataset.motion).toBe('paused');
     expect(control().classList.contains('gallery-picture')).toBe(true);
   }
-  act(() => control().click());
+  act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   expect(gallery().dataset.motion).toBe('running');
-  expect(control().getAttribute('aria-pressed')).toBe('false');
+  expect(control().getAttribute('aria-pressed')).toBeNull();
   expect(control().querySelector('svg').getAttribute('aria-hidden')).toBe('true');
 });
 
@@ -69,7 +69,7 @@ test('motion suspends offscreen and in background tabs without losing a delibera
   expect(gallery().dataset.motion).toBe('paused');
   act(() => { visibility = 'visible'; document.dispatchEvent(new Event('visibilitychange')); });
   expect(gallery().dataset.motion).toBe('running');
-  act(() => control().click());
+  act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   act(() => notify([{ isIntersecting: false }]));
   act(() => notify([{ isIntersecting: true }]));
   expect(gallery().dataset.motion).toBe('paused');
@@ -81,7 +81,7 @@ test('reduced-motion preference changes stop gallery and scene motion', () => {
   media.matches = true;
   render();
   expect(gallery().dataset.motion).toBe('paused');
-  expect(control()).toBeNull();
+  expect(control()).not.toBeNull();
   expect(active().querySelector('.test-scene').dataset.allowed).toBe('false');
   act(() => { media.matches = false; media.addEventListener.mock.calls[0][1](); });
   expect(gallery().dataset.motion).toBe('running');
@@ -89,7 +89,7 @@ test('reduced-motion preference changes stop gallery and scene motion', () => {
   act(() => { media.matches = true; media.addEventListener.mock.calls[0][1](); });
   select(4);
   expect(gallery().dataset.motion).toBe('paused');
-  expect(control()).toBeNull();
+  expect(control()).not.toBeNull();
   expect(active().querySelector('.experience-story').hidden).toBe(false);
 });
 
@@ -107,13 +107,13 @@ test('mobile cards preserve pause and support directional, Home and End navigati
   window.matchMedia = jest.fn(query => query === '(max-width: 760px)' ? { matches: true, addEventListener: jest.fn(), removeEventListener: jest.fn() } : match(query));
   render();
   const buttons = [...container.querySelectorAll('.gallery-picture')];
-  act(() => control().click());
+  act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
   act(() => buttons[0].focus());
   for (const [key, index] of [['ArrowLeft', 5], ['ArrowUp', 4], ['Home', 0], ['End', 5], ['ArrowRight', 0], ['ArrowDown', 1]]) {
     act(() => document.activeElement.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true })));
     expect(document.activeElement).toBe(buttons[index]);
     expect(buttons[index].getAttribute('aria-expanded')).toBe('true');
-    expect(control().getAttribute('aria-label')).toContain('Resume animation');
+    expect(control().getAttribute('aria-label')).toContain('current chapter');
     expect(gallery().dataset.motion).toBe('paused');
     expect(container.querySelectorAll('.experience-card.is-active')).toHaveLength(1);
   }
@@ -172,7 +172,7 @@ test('mobile accordion animates heights in place, retains a paused departing sce
     expect(container.querySelector('.is-departing')).toBeNull();
     expect(container.querySelector('.gallery-track').hasAttribute('data-rearranging')).toBe(false);
     select(2);
-    act(() => control().click());
+    act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
     expect(container.querySelector('.is-departing')).toBeNull();
     expect(container.querySelector('.gallery-track').hasAttribute('data-rearranging')).toBe(false);
     expect(gallery().dataset.motion).toBe('paused');
@@ -183,16 +183,15 @@ test('mobile accordion animates heights in place, retains a paused departing sce
 });
 
 
-test('Experience has no separate animation buttons and the open artwork toggles motion', () => {
+test('clicking an open artwork keeps its motion running', () => {
   render();
   expect(container.querySelector('.gallery-motion-control, .experience-story button')).toBeNull();
-  expect(control().getAttribute('aria-label')).toContain('Pause animation');
-  act(() => control().click());
-  expect(control().getAttribute('aria-label')).toContain('Resume animation');
-  expect(gallery().dataset.motion).toBe('paused');
-  act(() => control().click());
-  expect(gallery().dataset.motion).toBe('running');
-  expect(container.querySelector('#gallery-help').textContent).toContain('Activate the open artwork');
+  for (let index = 0; index < 3; index++) {
+    act(() => control().click());
+    expect(gallery().dataset.motion).toBe('running');
+    expect(active().querySelector('.test-scene').dataset.paused).toBe('false');
+    expect(control().getAttribute('aria-label')).not.toMatch(/Pause|Resume/);
+  }
 });
 
 
@@ -234,4 +233,60 @@ test('each mobile card fits its own story instead of reserving the longest story
   act(() => { viewport.matches = false; viewport.addEventListener.mock.calls[0][1]({ matches: false }); });
   expect(track.style.getPropertyValue('--mobile-art-height')).toBe('');
   cards.forEach(card => expect(card.style.getPropertyValue('--mobile-feature-height')).toBe(''));
+});
+
+
+test('auto tour waits for playback then advances every five seconds and wraps', () => {
+  jest.useFakeTimers();
+  try {
+    render();
+    for (let index = 0; index < 6; index++) {
+      expect(active()).toBe(container.querySelectorAll('.experience-card')[index]);
+      act(() => active().querySelector('.test-scene').dispatchEvent(new Event('animationstart', { bubbles: true })));
+      act(() => jest.advanceTimersByTime(4999));
+      expect(active()).toBe(container.querySelectorAll('.experience-card')[index]);
+      act(() => jest.advanceTimersByTime(1));
+    }
+    expect(active().id).toBe('experience-deloitte');
+  } finally { jest.useRealTimers(); }
+});
+
+test('video end advances immediately, while deliberate pause and keyboard focus hold the tour', () => {
+  jest.useFakeTimers();
+  try {
+    render();
+    act(() => active().querySelector('.test-scene').dispatchEvent(new Event('animationend', { bubbles: true })));
+    expect(active().id).toBe('experience-fordham');
+    act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
+    act(() => jest.advanceTimersByTime(20000));
+    expect(active().id).toBe('experience-fordham');
+    act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })));
+    act(() => control().dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true })));
+    act(() => jest.advanceTimersByTime(20000));
+    expect(active().id).toBe('experience-columbia');
+  } finally { jest.useRealTimers(); }
+});
+
+test('tour uses a bounded missing-video fallback and stops offscreen', () => {
+  jest.useFakeTimers();
+  let notify;
+  global.IntersectionObserver = jest.fn(callback => { notify = callback; return { observe() {}, disconnect() {} }; });
+  try {
+    render();
+    act(() => jest.advanceTimersByTime(20000));
+    expect(active().id).toBe('experience-deloitte');
+    act(() => notify([{ isIntersecting: true }]));
+    act(() => jest.advanceTimersByTime(10000));
+    expect(active().id).toBe('experience-fordham');
+    act(() => notify([{ isIntersecting: false }]));
+    act(() => jest.advanceTimersByTime(20000));
+    expect(active().id).toBe('experience-fordham');
+  } finally { jest.useRealTimers(); }
+});
+
+
+test('active artwork uses a normal cursor while inactive artwork stays selectable', () => {
+  const css = require('fs').readFileSync(require('path').join(__dirname, 'ExperienceGallery.css'), 'utf8');
+  expect(css).toMatch(/\.experience-card\.is-active \.gallery-picture\s*\{[^}]*cursor: default/);
+  expect(css).toMatch(/(?:^|\n)\.gallery-picture\s*\{[^}]*cursor: pointer/);
 });

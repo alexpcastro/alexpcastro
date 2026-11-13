@@ -79,7 +79,7 @@ test('hover plays only that clip muted inline; leaving releases it and reveals t
   hover(0);
   const first = video();
   expect(first.getAttribute('src')).toBe('/test-only/barcelona.mp4');
-  expect(first.getAttribute('poster')).toBe('/education/asb-artwork-1280.jpg');
+  expect(first.getAttribute('poster')).toBe('/education/asb-artwork-1280.jpg?v=20261112-immersive');
   expect(first.loop && first.muted && first.playsInline).toBe(true);
   expect(first.preload).toBe('none');
   expect(first.controls).toBe(false);
@@ -108,7 +108,7 @@ test('rapidly moving between images never plays two videos and late leave does n
   expect(video().getAttribute('src')).toBe('/test-only/oxford.mp4');
 });
 
-test('keyboard focus previews, Escape stops, activation toggles, and blur stops', () => {
+test('keyboard focus previews, Escape stops, activation keeps playing, and blur stops', () => {
   ready();
   const button = controls()[2];
   act(() => button.focus());
@@ -119,13 +119,13 @@ test('keyboard focus previews, Escape stops, activation toggles, and blur stops'
   click(button);
   expect(video()).not.toBeNull();
   click(button);
-  expect(video()).toBeNull();
+  expect(video()).not.toBeNull();
   click(button);
   act(() => button.blur());
   expect(video()).toBeNull();
 });
 
-test('touch starts on the first tap, ignores synthetic hover/focus, and stops on second tap', () => {
+test('touch starts on the first tap, ignores synthetic hover/focus, and continues on second tap', () => {
   ready();
   const button = controls()[3];
   send(button, 'pointerover', { pointerType: 'touch' });
@@ -137,16 +137,16 @@ test('touch starts on the first tap, ignores synthetic hover/focus, and stops on
   send(button, 'pointerout', { pointerType: 'touch' });
   expect(video()).not.toBeNull();
   click(button);
-  expect(video()).toBeNull();
+  expect(video()).not.toBeNull();
 });
 
 test('global pause stops a preview and resume waits for a fresh interaction', () => {
   ready(); hover(0);
-  const toggle = container.querySelector('.education-motion-control');
-  click(toggle);
+  const toggle = container.querySelector('#education');
+  send(toggle, 'keydown', { key: 'Escape' });
   expect(video()).toBeNull();
   expect(controls()[0].disabled).toBe(true);
-  click(toggle);
+  send(toggle, 'keydown', { key: 'Escape' });
   expect(video()).toBeNull();
   expect(controls()[0].disabled).toBe(false);
   click(controls()[0]);
@@ -264,7 +264,7 @@ test.each(['pine-crest', 'beau-soleil', 'id-tech-miami'])('new %s entry plays it
   expect(video()).toBeNull();
   send(button, 'pointerover', { pointerType: 'mouse' });
   expect(video().getAttribute('src')).toBe(`/education/video/${key}-immersive-5s.mp4`);
-  expect(video().getAttribute('poster')).toBe(`/education/${key}-artwork-1280.jpg`);
+  expect(video().getAttribute('poster')).toBe(`/education/${key}-artwork-1280.jpg?v=20261112-immersive`);
   expect(video().preload).toBe('none');
   leave(button);
   expect(video()).toBeNull();
@@ -283,7 +283,7 @@ test.each(['barcelona', 'oxford', 'fordham-bs', 'esade', 'fordham-ms'])('refresh
   send(button, 'pointerover', { pointerType: 'mouse' });
   const fileKey = key === 'barcelona' ? 'asb' : key;
   expect(video().getAttribute('src')).toBe(`/education/video/${fileKey}-refresh-immersive-5s.mp4`);
-  expect(video().getAttribute('poster')).toBe(`/education/${fileKey}-artwork-1280.jpg`);
+  expect(video().getAttribute('poster')).toBe(`/education/${fileKey}-artwork-1280.jpg?v=20261112-immersive`);
   expect(video().loop).toBe(true);
   expect(video().muted).toBe(true);
   leave(button);
@@ -323,21 +323,18 @@ test('mobile autoplay resumes on reentry and page visibility but respects global
   expect(video()).toBeNull();
   act(() => { visibility = 'visible'; document.dispatchEvent(new Event('visibilitychange')); });
   expect(container.querySelectorAll('video')).toHaveLength(8);
-  const toggle = container.querySelector('.education-motion-control');
-  click(toggle); expect(video()).toBeNull();
-  click(toggle); expect(container.querySelectorAll('video')).toHaveLength(8);
+  const toggle = container.querySelector('#education');
+  send(toggle, 'keydown', { key: 'Escape' }); expect(video()).toBeNull();
+  send(toggle, 'keydown', { key: 'Escape' }); expect(container.querySelectorAll('video')).toHaveLength(8);
 });
 
-test('mobile tap pauses a card until explicitly resumed, without stopping other cards', () => {
+test('mobile taps keep autoplaying cards running', () => {
   mobileLayout(); ready();
   const button = controls()[0];
   click(button);
-  expect(container.querySelectorAll('video')).toHaveLength(7);
-  expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
-  intersect(false); intersect();
-  expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
+  expect(container.querySelectorAll('video')).toHaveLength(8);
   click(button);
-  expect(container.querySelector('.education-stop--barcelona video')).not.toBeNull();
+  expect(container.querySelectorAll('video')).toHaveLength(8);
   send(button, 'keydown', { key: 'Escape' });
   expect(container.querySelector('.education-stop--barcelona video')).toBeNull();
 });
@@ -384,14 +381,18 @@ test('desktop tour opens Pine Crest without a click and advances after five seco
 });
 test('desktop hover holds selected school, leaving resumes and global pause freezes the tour', () => {
   jest.useFakeTimers(); tour(); hover(1);
+  const heldVideo = video();
+  click(controls()[1]);
+  expect(video()).toBe(heldVideo);
+  expect(video().loop).toBe(true);
   send(video(), 'playing'); act(() => jest.advanceTimersByTime(20000));
   expect(activeSchool().className).toContain('oxford');
   leave(controls()[1]); act(() => jest.advanceTimersByTime(5000));
   expect(activeSchool().className).toContain('fordham-bs');
-  click(container.querySelector('.education-motion-control'));
+  send(container.querySelector('#education'), 'keydown', { key: 'Escape' });
   act(() => jest.advanceTimersByTime(20000));
   expect(video()).toBeNull(); expect(activeSchool().className).toContain('fordham-bs');
-  click(container.querySelector('.education-motion-control'));
+  send(container.querySelector('#education'), 'keydown', { key: 'Escape' });
   expect(video()).not.toBeNull();
   act(() => root.render(null)); jest.useRealTimers();
 });
@@ -413,7 +414,7 @@ test('desktop tour handles stalled media without getting stuck and Escape stops'
   const button = activeSchool().querySelector('button');
   send(button, 'keydown', { key: 'Escape' });
   act(() => jest.advanceTimersByTime(20000)); expect(video()).toBeNull();
-  expect(container.querySelector('.education-motion-control').getAttribute('aria-pressed')).toBe('true');
+  expect(container.querySelector('#education').dataset.motion).toBe('paused');
   act(() => root.render(null)); jest.useRealTimers();
 });
 test('tour respects reduced-motion and sequences one mobile card at a time', () => {
@@ -462,8 +463,10 @@ test('mobile arrow navigation selects the next card and preserves explicit pause
   send(rail, 'keydown', { key: 'ArrowRight' });
   expect(activeSchool().className).toContain('beau-soleil');
   click(activeSchool().querySelector('button'));
+  expect(video()).not.toBeNull();
+  send(container.querySelector('#education'), 'keydown', { key: 'Escape' });
   expect(video()).toBeNull();
-  expect(container.querySelector('.education-motion-control').getAttribute('aria-pressed')).toBe('true');
+  expect(container.querySelector('#education').dataset.motion).toBe('paused');
 });
 
 test('mobile swipe expands the selected card immediately without waiting for scroll debounce', () => {

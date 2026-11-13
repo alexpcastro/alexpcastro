@@ -133,17 +133,13 @@ export default function EducationJourney({ autoCycle = true }) {
     };
   }, []);
 
-  return <section id="education" ref={sectionRef} className="portfolio-education education-journey" tabIndex="-1" aria-labelledby="education-heading" data-motion={running ? "running" : "paused"} onKeyDown={tilt.reset}>
+  return <section id="education" ref={sectionRef} className="portfolio-education education-journey" tabIndex="-1" aria-labelledby="education-heading" data-motion={running ? "running" : "paused"} onKeyDown={event => { tilt.reset(); if (event.key === "Escape" && event.target === event.currentTarget) setPaused(value => !value); }}>
     <div className="education-heading-row">
       <h2 id="education-heading">Education</h2>
-      {allowMotion && <button type="button" className="education-motion-control" aria-pressed={paused} aria-label={paused ? "Resume education motion" : "Pause education motion"} onClick={() => setPaused(value => !value)}>
-        <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true" focusable="false">
-          {paused ? <path d="M5 3 12 8 5 13Z" /> : <path d="M4 3h3v10H4zM10 3h3v10h-3z" />}
-        </svg><span>{paused ? "Resume" : "Pause"}</span>
-      </button>}
+
     </div>
 
-    <p id="education-animation-hint" className="visually-hidden">Each active image plays for five seconds before the next. On mobile, swipe the horizontal row to explore. On desktop, the next image expands. Hover or focus to explore a school and hold the tour. Tap or press Enter to pause. Use Resume to continue. Escape stops.</p>
+    <p id="education-animation-hint" className="visually-hidden">Each active image plays for five seconds before the next. On mobile, swipe the horizontal row to explore. On desktop, the next image expands. Hover or focus to explore a school and hold the tour. Tap or press Enter to select a school. Videos keep looping while you explore. Escape stops animation.</p>
     <div ref={trackRef} className="education-card-grid" data-auto-cycle={cycling && allowMotion ? "true" : undefined} data-carousel={compact && cycling && allowMotion ? "true" : undefined}
       onPointerDown={startTouch}
       onPointerMove={event => { if (pointerStart.current !== null && Math.abs(event.clientX - pointerStart.current) > 8) dragged.current = true; }}

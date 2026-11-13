@@ -78,7 +78,7 @@ test("an empty clip map leaves six stills and no media requests, with motion con
   expect(container.querySelectorAll("img.career-scene")).toHaveLength(6);
   expect(container.querySelector("video, source, .career-video-layer")).toBeNull();
   expect(container.querySelector(".gallery-motion-control")).toBeNull();
-  expect(activeArtwork().getAttribute("aria-label")).toContain("Pause animation");
+  expect(activeArtwork().getAttribute("aria-label")).toContain("current chapter");
   expect(play).not.toHaveBeenCalled();
 });
 
@@ -93,7 +93,7 @@ test("only the open chapter loads in view and loops muted inline above its exact
   expect(container.querySelectorAll("video")).toHaveLength(1);
   expect(video.getAttribute("src")).toBe("/test-only/deloitte.mp4");
   expect(video.getAttribute("poster")).toBe("/artwork/deloitte-neon-1280.jpg");
-  expect(video.loop).toBe(true);
+  expect(video.loop).toBe(false);
   expect(video.muted).toBe(true);
   expect(video.playsInline).toBe(true);
   expect(video.controls).toBe(false);
@@ -115,23 +115,16 @@ test("only the open chapter loads in view and loops muted inline above its exact
   expect(video.classList.contains("is-playing")).toBe(false);
 });
 
-test("the open artwork stops motion and preserves that choice across chapter changes", () => {
+test("clicking the open artwork keeps the clip playing", () => {
   enableClips(); render(); intersect();
-  let control = activeArtwork();
-  expect(control.classList.contains("gallery-picture")).toBe(true);
-  expect(control.getAttribute("aria-label")).toContain("Pause animation");
-  expect(control.getAttribute("aria-pressed")).toBe("false");
+  const control = activeArtwork();
+  const video = container.querySelector('video');
+  pause.mockClear();
   act(() => control.click());
-  expect(pause).toHaveBeenCalled();
-  expect(control.getAttribute("aria-label")).toContain("Resume animation");
-  expect(control.getAttribute("aria-pressed")).toBe("true");
-  play.mockClear();
-  select(2); intersect();
-  expect(play).not.toHaveBeenCalled();
-  control = activeArtwork();
-  expect(control.getAttribute("aria-label")).toContain("Resume animation");
   act(() => control.click());
-  expect(play).toHaveBeenCalledTimes(1);
+  expect(pause).not.toHaveBeenCalled();
+  expect(container.querySelector('video')).toBe(video);
+  expect(control.getAttribute('aria-label')).not.toMatch(/Pause|Resume/);
 });
 
 test("leaving the viewport or hiding the page unloads and pauses the clip", () => {
@@ -204,4 +197,40 @@ test("a late play rejection after changing chapters does not change the new vide
   await act(async () => { reject(new Error("Playback interrupted")); await Promise.resolve(); });
   expect(next.classList.contains("is-playing")).toBe(true);
   expect(next.getAttribute("src")).toBe("/test-only/fordham.mp4");
+});
+
+
+test("ended video advances the tour without a click and mounts the next chapter", () => {
+  enableClips();
+  render();
+  intersect();
+  intersect();
+  const first = container.querySelector('video');
+  expect(first.id).toBe('video-deloitte');
+  expect(first.loop).toBe(false);
+  act(() => first.dispatchEvent(new Event('ended', { bubbles: true })));
+  expect(container.querySelector('.experience-card.is-active').id).toBe('experience-fordham');
+  intersect();
+  expect(container.querySelector('video').id).toBe('video-fordham');
+});
+
+
+test("hover holds a chapter with its video looping, and clicking does not interrupt it", () => {
+  jest.useFakeTimers();
+  try {
+    enableClips(); render(); intersect();
+    const artwork = activeArtwork(), video = container.querySelector('video');
+    const event = new Event('pointerover', { bubbles: true });
+    Object.defineProperty(event, 'pointerType', { value: 'mouse' });
+    act(() => artwork.dispatchEvent(event));
+    expect(video.loop).toBe(true);
+    pause.mockClear();
+    act(() => artwork.click());
+    act(() => jest.advanceTimersByTime(20000));
+    expect(activeArtwork()).toBe(artwork);
+    expect(container.querySelector('video')).toBe(video);
+    expect(pause).not.toHaveBeenCalled();
+    act(() => artwork.dispatchEvent(new Event('pointerout', { bubbles: true })));
+    expect(video.loop).toBe(false);
+  } finally { jest.useRealTimers(); }
 });
